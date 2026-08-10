@@ -7,14 +7,28 @@ EFF Assistant 是一款面向安全运营人员的浏览器扩展插件。
 它可以直接读取当前安全设备 Web 控制台中的告警上下文，在不改造原有安全设备的情况下，快速完成告警字段识别、AI 快速研判，并可连接 [EFF-Monitoring](https://github.com/Fausto-404/EFF-Monitoring) 完成工单生成和平台级智能研判。
 
 ---
+## 🖥️ 支持场景
+
+理论上只要告警内容能够在浏览器页面中正常显示，EFF Assistant 即可进行采集并完成AI研判、协作流转。
+
+典型场景包括：
+
+- WAF
+- NDR
+- IDS / IPS
+- SOC
+- SIEM
+- 态势感知平台
+- EDR Web 控制台
+- 威胁检测平台
+- 自研安全运营平台
 
 ## ✨ 核心能力
 
 EFF Assistant 当前提供三项主要能力：
+<img width="1042" height="398" alt="image" src="https://github.com/user-attachments/assets/a54a1c26-55c5-4ffa-9c2d-ea29910f2746" />
 
 ### ⚡ 快速研判
-
-无需连接 EFF-Monitoring，可独立使用。
 
 插件读取当前页面可见告警文本，并调用用户自行配置的 AI 服务完成快速研判。
 
@@ -32,36 +46,6 @@ Quick AI
 结构化安全研判
 ```
 
-研判结论统一为：
-
-- `业务行为`
-- `存在攻击意图`
-- `攻击失败`
-- `攻击成功`
-- `非告警事件`
-- `无法确认`
-
-支持合理的多标签组合，例如：
-
-```text
-[存在攻击意图] [攻击失败]
-
-[存在攻击意图] [攻击成功]
-
-[存在攻击意图] [无法确认]
-```
-
-并在插件侧进行结论互斥校验，避免出现：
-
-```text
-攻击成功 + 攻击失败
-业务行为 + 存在攻击意图
-非告警事件 + 攻击成功
-```
-
-等不合理结果。
-
----
 
 ### ◎ 智能研判
 
@@ -81,19 +65,6 @@ Quick AI
 
 完成更完整的安全事件调查与证据化研判。
 
-```text
-当前告警
-   ↓
-EFF Parser
-   ↓
-资产 / IP名单 / TI / 历史事件 / STE
-   ↓
-Evidence Pack
-   ↓
-Threat Analysis Agent
-   ↓
-智能研判结果
-```
 
 ---
 
@@ -119,33 +90,6 @@ EFF Parser
 
 ---
 
-## 🧩 浏览器助手
-
-EFF Assistant 采用轻量悬浮助手交互。
-
-鼠标移动到助手后，会展开三个操作：
-
-```text
-        EFF Assistant
-             │
-    ┌────────┼────────┐
-    │        │        │
-生成工单   智能研判   快速研判
-```
-
-鼠标移动到对应功能后才展开相应详情，不持续占用页面空间。
-
-支持：
-
-- 拖动助手位置
-- 自动保存显示状态
-- 新标签页自动加载
-- 页面间保持助手配置
-- Hover 分级交互
-- 研判结果跟随助手显示
-
----
-
 ## 🤖 Quick AI
 
 快速研判 AI 支持两类协议：
@@ -165,64 +109,6 @@ Base URL 示例：
 ```text
 https://xxx.xxx/v1
 ```
-
-## 🔗 EFF-Monitoring 联动
-
-EFF Assistant 可以独立使用。
-
-连接 EFF-Monitoring 后，可以解锁更多安全运营能力：
-
-```text
-EFF Assistant
-      │
-      │ Plugin API
-      ▼
-EFF-Monitoring
-      │
-      ├── 设备识别
-      ├── 正则解析
-      ├── 工单生成
-      ├── 资产关联
-      ├── IP名单
-      ├── Threat Agent
-      ├── STE经验
-      └── 工单流转
-```
-
-EFF-Monitoring：
-
-https://github.com/Fausto-404/EFF-Monitoring
-
----
-
-## 🖥️ 支持场景
-
-理论上只要告警内容能够在浏览器页面中正常显示，EFF Assistant 即可进行采集。
-
-典型场景包括：
-
-- WAF
-- NDR
-- IDS / IPS
-- SOC
-- SIEM
-- 态势感知平台
-- EDR Web 控制台
-- 威胁检测平台
-- 自研安全运营平台
-
-不同安全设备可以在 EFF-Monitoring 中分别维护：
-
-```text
-设备名称
-设备 URL
-解析规则
-消息模板
-```
-
-EFF Assistant 根据当前页面 URL 自动选择对应设备规则。
-
----
 
 ## 🚀 安装
 
@@ -248,10 +134,4 @@ chrome://extensions/
 加载已解压的扩展程序
 ```
 
-然后选择 EFF Assistant 项目目录。
-
-- Star
-- Issue
-- Pull Request
-- 提交新的设备识别规则
-- 分享实际安全运营场景中的改进建议
+然后选择 EFF Assistant 项目目录即可。
