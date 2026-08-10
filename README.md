@@ -135,5 +135,6 @@ chrome://extensions/
 ```text
 加载已解压的扩展程序
 ```
+<img width="3014" height="554" alt="image" src="https://github.com/user-attachments/assets/4a4cbfab-c5e8-43d7-9641-71c50c38049e" />
 
 然后选择 EFF Assistant 项目目录即可。
