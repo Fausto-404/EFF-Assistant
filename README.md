@@ -2,7 +2,7 @@
 
 > 面向安全运营场景的浏览器 AI 助手，让现有 WAF、NDR、SOC 等安全设备快速具备告警解析、AI 研判与工单联动能力。
 
-EFF Assistant 是一款面向安全运营人员的 Chrome / Edge 浏览器扩展。
+EFF Assistant 是一款面向安全运营人员的浏览器扩展插件。
 
 它可以直接读取当前安全设备 Web 控制台中的告警上下文，在不改造原有安全设备的情况下，快速完成告警字段识别、AI 快速研判，并可连接 [EFF-Monitoring](https://github.com/Fausto-404/EFF-Monitoring) 完成工单生成和平台级智能研判。
 
