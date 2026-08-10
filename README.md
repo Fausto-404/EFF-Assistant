@@ -21,11 +21,12 @@
 </p>
 
 </div>
-EFF Assistant 是一款面向安全运营人员的 Chrome / Edge 浏览器扩展，它可以直接读取当前安全设备 Web 控制台中的告警上下文，在不改造原有安全设备的情况下，快速完成告警字段识别、AI 快速研判，并可连接EFF-Monitoring完成工单生成和平台级智能研判。
+
+EFF Assistant 是一款面向安全运营人员的 Chrome / Edge 浏览器扩展。它可以直接读取安全设备 Web 控制台中的告警上下文，在尽量不改造现有安全设备的情况下完成 **告警字段识别、资产属性关联与 AI 快速研判** ，并可连接EFF-Monitoring完成工单协作和平台级智能研判。
 
 ---
 
-**安全运营协作平台请查看：** [EFF-Monitoring](https://github.com/Fausto-404/EFF-Monitoring)
+**EFF-Monitoring安全运营协作平台请查看：** [EFF-Monitoring](https://github.com/Fausto-404/EFF-Monitoring)
 
 ## 🎬 功能演示
 
@@ -35,7 +36,7 @@ https://github.com/user-attachments/assets/1049f43b-fdc2-42bd-ae5b-b983fb4f45dd
 
 ## 🖥️ 支持场景
 
-理论上只要告警内容能够在浏览器页面中正常显示，EFF Assistant 即可进行采集并参与 AI 研判与协作流转。
+只要告警内容能够在浏览器页面中正常展示，EFF Assistant 即可采集页面上下文，并参与字段解析、资产关联、AI 研判与协作流转。
 
 典型场景包括：
 
@@ -48,7 +49,7 @@ https://github.com/user-attachments/assets/1049f43b-fdc2-42bd-ae5b-b983fb4f45dd
 | 能力 | 说明 |
 | --- | --- |
 | ⚡ **快速研判** | 直接读取当前页面告警上下文，调用用户自行配置的 AI，输出结构化研判结论与关键证据 |
-| ▣ **生成工单** | 根据当前页面 URL 自动识别安全设备，解析设备、源 IP、目的 IP、事件等字段并生成 EFF-Monitoring 工单 |
+| ▣ **生成工单** | 自动识别设备并解析源 IP、目的 IP、事件等字段，同时关联源/目的 IP 的资产与名单属性，生成 EFF-Monitoring 工单 |
 | ◎ **智能研判** | 连接 EFF-Monitoring 后调用 Threat Analysis Agent，结合资产、威胁情报、历史告警、相似事件与 STE 经验进行证据增强研判 |
 
 ### 快速研判
@@ -95,21 +96,24 @@ Quick AI
 
 ### 一键生成工单
 
-EFF Assistant 可以根据当前页面 URL 自动识别对应安全设备，并调用 EFF-Monitoring 中维护的解析规则快速生成工单，格式化为消息模版进行通报。
+EFF Assistant 可以根据当前页面 URL 自动识别对应安全设备，并调用 EFF-Monitoring 中维护的解析规则提取 **设备、源 IP、目的 IP、事件** 等关键字段。
+
+解析完成后，平台可进一步关联源/目的 IP 的资产属性和名单属性，帮助运营人员快速判断 IP 是否属于内部资产、已知资产或黑白名单对象，再生成工单进入后续协作流转。
 
 ```text
 安全设备告警页面
         ↓
 URL 自动识别设备
         ↓
-获取页面可见文本
-        ↓
-EFF Parser
+EFF Parser 解析告警
         ↓
 设备 / 源IP / 目的IP / 事件
         ↓
-生成工单
+资产属性 / 资产标签 / 黑白名单
+        ↓
+生成工单 → 协作流转
 ```
+
 <img width="2980" height="1532" alt="image" src="https://github.com/user-attachments/assets/4adfdc0b-c88c-4a4c-bb3d-e4c3809d18ad" />
 
 ---
