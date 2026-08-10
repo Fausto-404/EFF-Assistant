@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>EFF Assistant</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <main class="popup">
+    <header class="head">
+      <div class="brand">
+        <div class="logo"><span></span><span></span></div>
+        <div><h1>EFF Assistant</h1><p id="connectionText">正在读取状态…</p></div>
+      </div>
+      <span class="dot" id="connectionDot"></span>
+    </header>
+
+    <section class="controls toolbar">
+      <button id="toggleAssistant" class="primary">显示助手</button>
+      <button id="refreshPage">重新解析</button>
+      <button id="syncDevices">同步配置</button>
+    </section>
+
+    <section class="status-grid">
+      <div><span>平台 AI</span><strong id="platformAI">-</strong></div>
+      <div><span>插件 AI</span><strong id="quickAI">-</strong></div>
+    </section>
+
+    <section class="config-list">
+      <details class="config-card" id="platformConfig">
+        <summary>
+          <span class="config-icon">⌁</span>
+          <span class="config-copy">
+            <strong>连接平台</strong>
+            <em>获得生成工单、智能研判能力</em>
+          </span>
+          <span class="config-state" id="platformConfigState">未连接</span>
+          <button id="openPlatformRepo" class="platform-link" type="button" aria-label="获取 EFF-Monitoring 平台">
+            获取平台
+            <span>连接平台后可同步设备配置、生成工单，并使用平台资产、情报和历史经验进行增强研判。不配置平台也可以使用快速研判。</span>
+          </button>
+          <b>›</b>
+        </summary>
+        <div class="config-body">
+          <label>平台地址<input id="platformUrl" placeholder="http://127.0.0.1:18080" /></label>
+          <label>插件密钥<input id="platformToken" type="password" placeholder="eff_pat_****************" /></label>
+          <div class="two">
+            <button id="connectBtn" class="primary">测试并连接</button>
+            <button id="disconnectBtn">断开连接</button>
+          </div>
+          <div class="message inline" id="platformInfo"></div>
+        </div>
+      </details>
+
+      <details class="config-card" id="quickConfig">
+        <summary>
+          <span class="config-icon">AI</span>
+          <span class="config-copy">
+            <strong>插件AI能力接入</strong>
+            <em>获得快速研判能力</em>
+          </span>
+          <span class="config-state" id="quickConfigState">未配置</span>
+          <b>›</b>
+        </summary>
+        <div class="config-body">
+          <label class="switch-row"><input id="quickEnabled" type="checkbox" /><i></i><span>启用插件 AI</span></label>
+          <div class="two">
+            <label>协议
+              <select id="quickProtocol">
+                <option value="anthropic">Anthropic 兼容</option>
+                <option value="openai">OpenAI 兼容</option>
+              </select>
+            </label>
+            <label>模型<input id="quickModel" placeholder="deepseek-v4-flash" /></label>
+          </div>
+          <label>API 地址<input id="quickUrl" placeholder="https://xxx.xxx/v1" /></label>
+          <label>API Key<input id="quickKey" type="password" placeholder="sk-****************" /></label>
+          <details class="advanced-ai">
+            <summary>高级兼容选项</summary>
+            <div class="two">
+              <label>鉴权
+                <select id="quickAuthMode">
+                  <option value="protocol">协议默认</option>
+                  <option value="x-api-key">x-api-key</option>
+                  <option value="bearer">Bearer</option>
+                  <option value="api-key">api-key</option>
+                </select>
+              </label>
+              <label>端点
+                <select id="quickEndpointMode">
+                  <option value="base">Base URL</option>
+                  <option value="full">完整 URL</option>
+                </select>
+              </label>
+            </div>
+            <label id="openaiWireLabel">OpenAI 格式
+              <select id="quickOpenAIWire">
+                <option value="chat">Chat Completions</option>
+                <option value="responses">Responses</option>
+              </select>
+            </label>
+          </details>
+          <label class="switch-row"><input id="sendRawText" type="checkbox" checked /><i></i><span>允许读取当前页文本</span></label>
+          <select id="quickModelSelect" hidden><option value="">请选择模型</option></select>
+          <div class="quick-actions">
+            <button id="fetchModelsBtn">获取模型</button>
+            <button id="testQuickBtn">测试 AI</button>
+            <button id="saveQuickBtn" class="primary">保存</button>
+          </div>
+          <div class="message inline" id="quickInfo"></div>
+        </div>
+      </details>
+    </section>
+
+    <section class="menu">
+      <button id="viewText"><span>查看采集文本</span><b>›</b></button>
+    </section>
+
+    <div id="message" class="message"></div>
+  </main>
+
+  <dialog id="textDialog">
+    <div class="dialog-head">
+      <strong>当前页面采集文本</strong>
+      <div class="dialog-actions">
+        <button id="copyText" type="button">复制</button>
+        <button id="closeDialog" type="button" aria-label="关闭">×</button>
+      </div>
+    </div>
+    <div class="dialog-meta" id="textMeta"></div>
+    <pre id="textContent"></pre>
+  </dialog>
+
+  <script src="popup.js"></script>
+</body>
+</html>
