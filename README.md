@@ -85,7 +85,8 @@ EFF Parser
         ↓
 生成工单
 ```
-<img width="2978" height="1538" alt="image" src="https://github.com/user-attachments/assets/d9adf2f7-feed-4069-b360-1d204810f180" />
+<img width="2980" height="1532" alt="image" src="https://github.com/user-attachments/assets/4adfdc0b-c88c-4a4c-bb3d-e4c3809d18ad" />
+
 
 
 ---
