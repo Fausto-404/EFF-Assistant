@@ -143,6 +143,32 @@ EFF Parser
 
 ---
 
+## 🧪 Demo 演示环境
+
+项目提供了一套可直接用于体验 EFF Assistant 的演示环境和设备规则包，位于：
+
+[Demo](https://github.com/Fausto-404/EFF-Assistant/tree/main/Demo)
+
+其中包含：
+
+- `index.html`：模拟安全设备告警详情页面，可用于测试页面识别、字段解析和 AI 快速研判。
+- `安全威胁监测分析平台_设备识别包.json`：EFF-Monitoring 设备规则/模板导入包，包含设备信息及告警字段解析规则。
+
+### 使用方式
+
+1. 在 [EFF-Monitoring](https://github.com/Fausto-404/EFF-Monitoring) 中进入系统配置 → 设备 新增演示设备：
+<img width="2966" height="1520" alt="image" src="https://github.com/user-attachments/assets/4947050d-36c8-4a0d-b704-0c8ee882346a" />
+
+2. 导入 Demo 目录中的设备识别包。
+<img width="2382" height="1092" alt="image" src="https://github.com/user-attachments/assets/484b0801-cc38-425d-8977-253ee8027677" />
+
+3. 配置对应的设备 URL 后，即可使用 EFF Assistant 测试：
+
+   - 自动识别告警字段
+   - 一键生成工单
+   - 平台智能研判
+   - Quick AI 快速研判
+
 ## 📄 License
 
 本项目基于 [Apache License 2.0](./LICENSE) 开源。
