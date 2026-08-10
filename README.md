@@ -70,7 +70,7 @@ Quick AI
 
 ### ▣ 一键生成工单
 
-EFF Assistant 可以根据当前页面 URL 自动识别对应安全设备，并调用 EFF-Monitoring 中维护的解析规则。
+EFF Assistant 可以根据当前页面 URL 自动识别对应安全设备，并调用 EFF-Monitoring 中维护的解析规则快速生成工单，格式化为消息模版进行通报。
 
 ```text
 安全设备告警页面
@@ -85,8 +85,8 @@ EFF Parser
         ↓
 生成工单
 ```
+<img width="2978" height="1538" alt="image" src="https://github.com/user-attachments/assets/d9adf2f7-feed-4069-b360-1d204810f180" />
 
-无需在安全设备与 EFF-Monitoring 之间开发专用 API 对接。
 
 ---
 
