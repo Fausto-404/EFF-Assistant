@@ -26,7 +26,6 @@ EFF Assistant 是一款面向安全运营人员的浏览器扩展插件。
 ## ✨ 核心能力
 
 EFF Assistant 当前提供三项主要能力：
-<img width="1042" height="398" alt="image" src="https://github.com/user-attachments/assets/a54a1c26-55c5-4ffa-9c2d-ea29910f2746" />
 
 ### ⚡ 快速研判
 
