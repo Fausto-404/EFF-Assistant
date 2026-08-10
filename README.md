@@ -27,6 +27,12 @@ EFF Assistant 是一款面向安全运营人员的 Chrome / Edge 浏览器扩展
 
 **安全运营协作平台请查看：** [EFF-Monitoring](https://github.com/Fausto-404/EFF-Monitoring)
 
+## 🎬 功能演示
+
+https://github.com/user-attachments/assets/1049f43b-fdc2-42bd-ae5b-b983fb4f45dd
+
+---
+
 ## 🖥️ 支持场景
 
 理论上只要告警内容能够在浏览器页面中正常显示，EFF Assistant 即可进行采集并参与 AI 研判与协作流转。
