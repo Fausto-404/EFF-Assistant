@@ -1,4 +1,4 @@
-<h1 align="center">EFF Assistant AI安全运营助手</h1>
+<h1 align="center">EFF-Assistant AI安全运营助手</h1>
 
 <div align="center">
 
