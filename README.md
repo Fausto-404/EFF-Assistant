@@ -69,8 +69,7 @@ Quick AI
         ↓
 结构化安全研判
 ```
-<img width="3010" height="1540" alt="image" src="https://github.com/user-attachments/assets/fd80774f-bef1-412e-9aa6-9fce4ba305f3" />
-
+<img width="2998" height="1526" alt="image" src="https://github.com/user-attachments/assets/e6041b85-59f2-490f-8220-2d587b02a6f1" />
 
 
 ### 智能研判
