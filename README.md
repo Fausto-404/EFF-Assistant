@@ -187,3 +187,15 @@ EFF Parser 解析告警
 - 提出 Quick AI 与 EFF-Monitoring 联动能力的改进建议
 
 如果项目对你的工作有帮助，欢迎 Star。
+
+## 📝 更新记录
+
+### v1.0.1
+
+**修复：**
+
+- 修复安装时 `chrome.runtime.openOptionsPage()` 报错 `Could not create an options page`（manifest 缺少 `options_page` 声明）
+- 修复设置页面 Service Worker 无响应时页面永久挂起的问题
+- 修复 `setAccessLevel` 调用了不存在的存储 API（`chrome.storage.local` → `chrome.storage.session`），导致存储安全加固静默失效
+- 修复快速研判 AI 推理请求无超时保护，极端情况下可能无限等待
+
