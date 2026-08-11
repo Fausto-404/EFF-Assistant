@@ -1,0 +1,31 @@
+{
+  "manifest_version": 3,
+  "name": "EFF Assistant",
+  "version": "1.0.1",
+  "description": "面向安全运营团队的浏览器助手，可采集告警上下文、执行 AI 辅助研判，并从安全设备页面快速创建 EFF-Monitoring 工单。",
+  "minimum_chrome_version": "102",
+  "permissions": [
+    "storage",
+    "scripting",
+    "tabs",
+    "activeTab"
+  ],
+  "optional_host_permissions": [
+    "http://*/*",
+    "https://*/*"
+  ],
+  "background": {
+    "service_worker": "background/service-worker.js"
+  },
+  "action": {
+    "default_title": "EFF Assistant",
+    "default_popup": "popup/popup.html"
+  },
+  "options_page": "options/options.html",
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  }
+}
