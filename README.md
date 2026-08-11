@@ -159,7 +159,7 @@ EFF Parser 解析告警
 - `安全威胁监测分析平台_设备识别包.json`：EFF-Monitoring 设备规则/模板导入包，包含设备信息及告警字段解析规则。
 
 ### 使用方式
-
+如果只是测试快速研判功能，直接配置apikey使用即可，如果需要用生成工单、智能研判功能可以按照如下步骤配置
 1. 在 [EFF-Monitoring](https://github.com/Fausto-404/EFF-Monitoring) 中进入系统配置 → 设备 新增演示设备：
 <img width="2966" height="1520" alt="image" src="https://github.com/user-attachments/assets/4947050d-36c8-4a0d-b704-0c8ee882346a" />
 
