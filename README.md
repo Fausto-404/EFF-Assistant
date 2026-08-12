@@ -27,6 +27,7 @@ EFF Assistant 是一款面向安全运营人员的 Chrome / Edge 浏览器扩展
 
 > **核心目标：让现有 WAF、NDR、SOC 等安全设备快速具备告警解析、AI 研判、资产关联与工单联动能力。**
 
+
 ---
 
 ## ✨ 两种使用模式 · 四项核心能力
@@ -62,7 +63,7 @@ EFF Assistant 提供两种使用模式。
 
 快速研判面向当前页面中的单条安全告警。
 
-EFF Assistant 自动读取当前页面可见内容，识别告警场景、提取关键证据，并调用用户自行配置的 AI Provider 输出结构化研判结果。
+EFF Assistant 自动读取当前页面可见内容，识别告警场景、提取关键证据，并调用用户自行配置的 AI Provider 输出结构化研判结果，**支持多任务并行研判**。
 
 ```text
 当前安全设备页面
@@ -97,7 +98,7 @@ Quick AI
 
 单条告警可能只能看到某一个攻击动作，而多个告警组合后，才能进一步识别完整攻击行为。
 
-EFF Assistant 支持将 **多条告警加入同一个分析任务**，由 AI 统一分析这些事件之间的关联关系。
+EFF Assistant 支持将 **多条告警加入同一个分析任务**，由 AI 统一分析这些事件之间的关联关系，**支持跨标签页分析**。
 
 典型场景包括：
 
@@ -135,8 +136,7 @@ EFF Assistant 根据当前页面 URL 自动识别安全设备，并调用 EFF-Mo
 - 已知对象属性
 
 最终直接生成 EFF-Monitoring 安全工单。
-
-<img width="2980" height="1532" alt="生成工单" src="https://github.com/user-attachments/assets/4adfdc0b-c88c-4a4c-bb3d-e4c3809d18ad" />
+<img width="2932" height="1518" alt="image" src="https://github.com/user-attachments/assets/6ecb5c8a-1b9a-4495-b5b8-f8dfcb10ad09" />
 
 ---
 
@@ -159,9 +159,8 @@ Quick AI 主要分析浏览器当前能够看到的告警内容。
 - 平台分析工具
 
 形成证据增强的安全事件调查。
+<img width="2896" height="1516" alt="image" src="https://github.com/user-attachments/assets/7877bb64-ca14-4a32-82f9-1d39df73ddab" />
 
-
-<img width="2998" height="1526" alt="智能研判" src="https://github.com/user-attachments/assets/5b2ece46-c178-43f4-a90a-9b6fe3935bd4" />
 
 ---
 
@@ -193,14 +192,6 @@ Quick AI 主要分析浏览器当前能够看到的告警内容。
 2. 打开 `chrome://extensions/`。
 3. 开启 **开发者模式**。
 4. 点击 **加载已解压的扩展程序**。
-5. 选择包含 `manifest.json` 的 `EFF-Assistant` 目录。
-
-### Edge
-
-1. 下载并解压 EFF Assistant。
-2. 打开 `edge://extensions/`。
-3. 开启 **开发人员模式**。
-4. 点击 **加载解压缩的扩展**。
 5. 选择包含 `manifest.json` 的 `EFF-Assistant` 目录。
 
 安装完成后，通过插件设置页配置 Quick AI；如需使用进阶能力，再配置 EFF-Monitoring。
@@ -251,12 +242,7 @@ Quick AI 主要分析浏览器当前能够看到的告警内容。
 ## 🤝 反馈与贡献
 
 欢迎通过 Issue / Pull Request：
-
-- 提交新的安全设备适配规则
-- 反馈实际安全运营场景中的兼容性问题
-- 提交交互体验改进建议
-- 提出 Quick AI / 关联分析能力优化建议
-- 改进 EFF-Monitoring 联动能力
+感谢 @SimoLin 对本项目提出宝贵的建议
 
 如果项目对你的安全运营工作有帮助，欢迎 Star。
 
@@ -266,7 +252,14 @@ Quick AI 主要分析浏览器当前能够看到的告警内容。
 
 本项目基于 [Apache License 2.0](./LICENSE) 开源。
 ## 📝 更新记录
+### v1.1.0
 
+v1.1.0 将 EFF Assistant 从单次页面 AI 研判助手进一步升级为轻量化的浏览器侧安全研判工作台。
+
+- **关联分析**：支持采集多条告警并进行联合研判，输出关联标签、攻击关系、风险与证据链。
+- **多任务研判**：研判任务可拖出为独立窗口并行执行，支持拖动、最小化、恢复与任务结果持续回写。
+- **操作历史**：统一记录快速研判、智能研判、关联分析与工单操作，支持检索、详情查看及历史结果恢复。
+- **交互全面升级**：新增深浅色主题，重构 Popup、设置页及浮动研判窗口，并优化拖拽、状态反馈、AI 配置兼容和页面上下文刷新。
 ### v1.0.1
 
 **修复：**
