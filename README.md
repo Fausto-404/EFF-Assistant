@@ -174,6 +174,7 @@ Quick AI 主要分析浏览器当前能够看到的告警内容。
 | --- | --- |
 | Anthropic 兼容 | `https://xxx.xxx/anthropic` |
 | OpenAI 兼容 | `https://xxx.xxx/v1` |
+<img width="2568" height="1256" alt="image" src="https://github.com/user-attachments/assets/00a26f67-41e2-4405-8d61-4cbe497c9040" />
 
 > **数据安全提示**
 >
