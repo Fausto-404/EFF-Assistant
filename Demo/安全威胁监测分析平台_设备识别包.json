@@ -1,0 +1,260 @@
+{
+  "package_type": "eff-monitoring.device-rule-template-package",
+  "package_version": "1.0",
+  "exported_at": "2026-08-10T02:05:00Z",
+  "source_device": {
+    "name": "安全威胁监测分析平台",
+    "vendor": "通用",
+    "product": "安全威胁监测分析平台",
+    "device_ip": "127.0.0.1",
+    "version": "1.0",
+    "device_role": "monitor"
+  },
+  "rules": [
+    {
+      "name": "安全威胁平台-事件ID",
+      "field_key": "event_id",
+      "field_label": "事件ID",
+      "match_type": "regex",
+      "pattern": "(?:日志ID|事件ID)\\s*[:：]?\\s*\\n?\\s*([A-Za-z0-9_-]{8,})",
+      "priority": 50,
+      "enabled": true,
+      "match_all": false,
+      "sample_log": ""
+    },
+    {
+      "name": "安全威胁平台-告警设备",
+      "field_key": "device_name",
+      "field_label": "告警设备",
+      "match_type": "regex",
+      "pattern": "(?:采集设备序列号|传感器)\\s*[:：]?\\s*\\n?\\s*([A-Za-z0-9._-]+)",
+      "priority": 51,
+      "enabled": true,
+      "match_all": false,
+      "sample_log": ""
+    },
+    {
+      "name": "安全威胁平台-告警名称",
+      "field_key": "event_type",
+      "field_label": "告警名称",
+      "match_type": "regex",
+      "pattern": "(?:威胁名称|事件名称)\\s*[:：]?\\s*\\n?\\s*([^\\n]+)",
+      "priority": 52,
+      "enabled": true,
+      "match_all": false,
+      "sample_log": ""
+    },
+    {
+      "name": "安全威胁平台-攻击状态",
+      "field_key": "attack_result",
+      "field_label": "攻击状态",
+      "match_type": "regex",
+      "pattern": "攻击结果\\s*[:：]?\\s*\\n?\\s*(攻击成功|攻击失败|利用成功|利用失败|成功|失败|未知|无法确认)",
+      "priority": 53,
+      "enabled": true,
+      "match_all": false,
+      "sample_log": ""
+    },
+    {
+      "name": "安全威胁平台-告警时间",
+      "field_key": "alert_time",
+      "field_label": "告警时间",
+      "match_type": "regex",
+      "pattern": "(?:告警时间|time)\\s*[:=：]?\\s*\\n?\\s*([0-9]{4}-[0-9]{2}-[0-9]{2}[ T][0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\+08:00)?)",
+      "priority": 60,
+      "enabled": true,
+      "match_all": false,
+      "sample_log": ""
+    },
+    {
+      "name": "安全威胁平台-源IP",
+      "field_key": "src_ip",
+      "field_label": "源IP",
+      "match_type": "regex",
+      "pattern": "(?:攻击IP\\s*/\\s*源IP|攻击IP|源IP|src_ip)\\s*[:=：]?\\s*\\n?\\s*((?:\\d{1,3}\\.){3}\\d{1,3})",
+      "priority": 61,
+      "enabled": true,
+      "match_all": false,
+      "sample_log": ""
+    },
+    {
+      "name": "安全威胁平台-目的IP",
+      "field_key": "dst_ip",
+      "field_label": "目的IP",
+      "match_type": "regex",
+      "pattern": "(?:受害IP\\s*/\\s*目的IP|受害IP|目的IP|dst_ip)\\s*[:=：]?\\s*\\n?\\s*((?:\\d{1,3}\\.){3}\\d{1,3})",
+      "priority": 62,
+      "enabled": true,
+      "match_all": false,
+      "sample_log": ""
+    },
+    {
+      "name": "安全威胁平台-源端口",
+      "field_key": "src_port",
+      "field_label": "源端口",
+      "match_type": "regex",
+      "pattern": "(?:源端口|src_port)\\s*[:=：]?\\s*\\n?\\s*(\\d{1,5})",
+      "priority": 70,
+      "enabled": true,
+      "match_all": false,
+      "sample_log": ""
+    },
+    {
+      "name": "安全威胁平台-目的端口",
+      "field_key": "dst_port",
+      "field_label": "目的端口",
+      "match_type": "regex",
+      "pattern": "(?:目的端口|dst_port)\\s*[:=：]?\\s*\\n?\\s*(\\d{1,5})",
+      "priority": 71,
+      "enabled": true,
+      "match_all": false,
+      "sample_log": ""
+    },
+    {
+      "name": "安全威胁平台-攻击阶段",
+      "field_key": "attack_stage",
+      "field_label": "攻击阶段",
+      "match_type": "regex",
+      "pattern": "攻击阶段\\s*[:：]?\\s*\\n?\\s*([^\\n]+)",
+      "priority": 72,
+      "enabled": true,
+      "match_all": false,
+      "sample_log": ""
+    },
+    {
+      "name": "安全威胁平台-HTTP请求方法",
+      "field_key": "http_method",
+      "field_label": "HTTP-请求方法",
+      "match_type": "regex",
+      "pattern": "(?:HTTP-请求方法|http_method)\\s*[:=：]?\\s*\\n?\\s*(GET|POST|PUT|DELETE|PATCH|HEAD|OPTIONS)",
+      "priority": 73,
+      "enabled": true,
+      "match_all": false,
+      "sample_log": ""
+    },
+    {
+      "name": "安全威胁平台-HTTP状态码",
+      "field_key": "status_code",
+      "field_label": "状态码",
+      "match_type": "regex",
+      "pattern": "(?:状态码|status_code)\\s*[:=：]?\\s*\\n?\\s*(\\d{3})",
+      "priority": 74,
+      "enabled": true,
+      "match_all": false,
+      "sample_log": ""
+    },
+    {
+      "name": "安全威胁平台-URI",
+      "field_key": "uri",
+      "field_label": "URI",
+      "match_type": "regex",
+      "pattern": "(?:^|\\n)URI\\s*[:：]?\\s*\\n?\\s*([^\\s\\n]+)",
+      "priority": 75,
+      "enabled": true,
+      "match_all": false,
+      "sample_log": ""
+    },
+    {
+      "name": "安全威胁平台-会话ID",
+      "field_key": "session_id",
+      "field_label": "会话ID",
+      "match_type": "regex",
+      "pattern": "(?:会话ID|session_id)\\s*[:=：]?\\s*\\n?\\s*([A-Za-z0-9_-]+)",
+      "priority": 76,
+      "enabled": true,
+      "match_all": false,
+      "sample_log": ""
+    },
+    {
+      "name": "安全威胁平台-日志ID",
+      "field_key": "log_id",
+      "field_label": "日志ID",
+      "match_type": "regex",
+      "pattern": "(?:日志ID|log_id)\\s*[:=：]?\\s*\\n?\\s*([A-Za-z0-9_-]+)",
+      "priority": 77,
+      "enabled": true,
+      "match_all": false,
+      "sample_log": ""
+    },
+    {
+      "name": "安全威胁平台-日志类型",
+      "field_key": "log_type",
+      "field_label": "日志类型",
+      "match_type": "regex",
+      "pattern": "(?:日志类型|log_type)\\s*[:=：]?\\s*\\n?\\s*([^\\n]+)",
+      "priority": 78,
+      "enabled": true,
+      "match_all": false,
+      "sample_log": ""
+    }
+  ],
+  "templates": [
+    {
+      "name": "封禁源IP-安全威胁监测平台消息通报",
+      "type": "message",
+      "content": "【安全威胁分析研判】\n事件 ID：{{事件ID}}\n告警设备：{{告警设备}}\n告警时间：{{告警时间}}\n告警名称：{{告警名称}}\n攻击状态：{{攻击状态}}\n攻击IP：{{源IP}}\n目的IP：{{目的IP}}\n处置建议：封堵攻击源IP {{源IP}}",
+      "variables": [
+        "事件ID",
+        "告警设备",
+        "告警时间",
+        "告警名称",
+        "攻击状态",
+        "源IP",
+        "目的IP",
+        "源IP"
+      ],
+      "scope": "team",
+      "is_default": false
+    },
+    {
+      "name": "封禁目的IP-安全威胁监测平台消息通报",
+      "type": "message",
+      "content": "【安全威胁分析研判】\n事件 ID：{{事件ID}}\n告警设备：{{告警设备}}\n告警时间：{{告警时间}}\n告警名称：{{告警名称}}\n攻击状态：{{攻击状态}}\n攻击IP：{{源IP}}\n目的IP：{{目的IP}}\n处置建议：封堵目的IP {{目的IP}}",
+      "variables": [
+        "事件ID",
+        "告警设备",
+        "告警时间",
+        "告警名称",
+        "攻击状态",
+        "源IP",
+        "目的IP",
+        "目的IP"
+      ],
+      "scope": "team",
+      "is_default": false
+    },
+    {
+      "name": "应急-安全威胁监测平台消息通报",
+      "type": "message",
+      "content": "【安全威胁分析研判】\n事件 ID：{{事件ID}}\n告警设备：{{告警设备}}\n告警时间：{{告警时间}}\n告警名称：{{告警名称}}\n攻击状态：{{攻击状态}}\n攻击IP：{{源IP}}\n目的IP：{{目的IP}}\n处置建议：已确认攻击成功，建议立即进入应急响应流程",
+      "variables": [
+        "事件ID",
+        "告警设备",
+        "告警时间",
+        "告警名称",
+        "攻击状态",
+        "源IP",
+        "目的IP"
+      ],
+      "scope": "team",
+      "is_default": false
+    },
+    {
+      "name": "加白名单-安全威胁监测平台消息通报",
+      "type": "message",
+      "content": "【安全威胁分析研判】\n事件 ID：{{事件ID}}\n告警设备：{{告警设备}}\n告警时间：{{告警时间}}\n告警名称：{{告警名称}}\n攻击状态：{{攻击状态}}\n攻击IP：{{源IP}}\n目的IP：{{目的IP}}\n处置建议：已确认为合法流量，源IP {{源IP}} 已加入白名单",
+      "variables": [
+        "事件ID",
+        "告警设备",
+        "告警时间",
+        "告警名称",
+        "攻击状态",
+        "源IP",
+        "目的IP",
+        "源IP"
+      ],
+      "scope": "team",
+      "is_default": false
+    }
+  ]
+}

