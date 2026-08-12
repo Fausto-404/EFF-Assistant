@@ -109,7 +109,7 @@ EFF Assistant 支持将 **多条告警加入同一个分析任务**，由 AI 统
 - 同一攻击者访问多个 URL
 - 单条告警证据不足
 - 多条相似告警需要联合判断
-<img width="2942" height="1526" alt="image" src="https://github.com/user-attachments/assets/013c1315-31d5-432f-b8bb-2416dd042d68" />
+<img width="2940" height="1510" alt="image" src="https://github.com/user-attachments/assets/b30e9455-b4e0-49dd-93cb-7afed442a604" />
 
 ---
 
