@@ -30,7 +30,7 @@ EFF Assistant 是一款面向安全运营人员的 Chrome / Edge 浏览器扩展
 
 ---
 
-## ✨ 两种使用模式 · 四项核心能力
+## ✨ 四项核心能力
 
 EFF Assistant 提供两种使用模式。
 
@@ -40,8 +40,8 @@ EFF Assistant 提供两种使用模式。
 | --- | --- | --- |
 | **独立使用** | ⚡ 快速研判 | 读取当前告警页面上下文，调用用户配置的 AI 快速完成单条告警研判 |
 | **独立使用** | 🔗 关联分析 | 将多条告警加入同一分析上下文，联合分析攻击行为、时间关系及关联证据 |
-| **进阶使用** | ▣ 生成工单 | 连接 EFF-Monitoring，自动解析告警字段、关联资产信息并生成安全工单 |
-| **进阶使用** | ◎ 智能研判 | 调用平台 Threat Analysis Agent，结合资产、情报、历史告警等上下文进行深度调查 |
+| **进阶使用** | ▣ 生成工单 | 连接 EFF-Monitoring 平台，自动解析告警字段、关联资产信息并生成安全工单 |
+| **进阶使用** | ◎ 智能研判 | 调用EFF-Monitoring 平台 Threat Analysis Agent，结合资产、情报、历史告警等上下文进行深度调查 |
 
 ---
 ## 🖥️ 支持场景
@@ -87,9 +87,7 @@ Quick AI
 - EDR Web 控制台事件
 - WebShell / 恶意请求 / 漏洞利用告警
 - 自研安全运营平台事件
-<img width="2968" height="1526" alt="image" src="https://github.com/user-attachments/assets/96e10a96-c10d-4e89-acc4-61de765e2aa1" />
-
-
+<img width="2976" height="1528" alt="image" src="https://github.com/user-attachments/assets/cee9e685-1d57-4fde-a81d-fc0e86ac8630" />
 
 ---
 
@@ -109,7 +107,8 @@ EFF Assistant 支持将 **多条告警加入同一个分析任务**，由 AI 统
 - 同一攻击者访问多个 URL
 - 单条告警证据不足
 - 多条相似告警需要联合判断
-<img width="2940" height="1510" alt="image" src="https://github.com/user-attachments/assets/b30e9455-b4e0-49dd-93cb-7afed442a604" />
+<img width="2930" height="1528" alt="image" src="https://github.com/user-attachments/assets/edc431e9-6332-42c6-b861-a775937bb62d" />
+
 
 ---
 
