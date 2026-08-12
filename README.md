@@ -29,12 +29,6 @@ EFF Assistant 是一款面向安全运营人员的 Chrome / Edge 浏览器扩展
 
 ---
 
-## 🎬 功能演示
-
-https://github.com/user-attachments/assets/1049f43b-fdc2-42bd-ae5b-b983fb4f45dd
-
----
-
 ## ✨ 两种使用模式 · 四项核心能力
 
 EFF Assistant 提供两种使用模式。
