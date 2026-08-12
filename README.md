@@ -87,7 +87,8 @@ Quick AI
 - EDR Web 控制台事件
 - WebShell / 恶意请求 / 漏洞利用告警
 - 自研安全运营平台事件
-<img width="2904" height="1502" alt="image" src="https://github.com/user-attachments/assets/0ae4e80c-dd1d-4207-8e64-82a8a399df73" />
+<img width="2968" height="1526" alt="image" src="https://github.com/user-attachments/assets/96e10a96-c10d-4e89-acc4-61de765e2aa1" />
+
 
 
 ---
@@ -159,8 +160,7 @@ Quick AI 主要分析浏览器当前能够看到的告警内容。
 - 平台分析工具
 
 形成证据增强的安全事件调查。
-<img width="2896" height="1516" alt="image" src="https://github.com/user-attachments/assets/7877bb64-ca14-4a32-82f9-1d39df73ddab" />
-
+<img width="2982" height="1532" alt="image" src="https://github.com/user-attachments/assets/adae44be-1049-4245-b225-e4e2001c2118" />
 
 ---
 
