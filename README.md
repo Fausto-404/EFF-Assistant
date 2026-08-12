@@ -1,4 +1,4 @@
-<h1 align="center">EFF-Assistant AI安全运营助手</h1>
+<h1 align="center">EFF-Assistant AI 安全运营助手</h1>
 
 <div align="center">
 
@@ -6,15 +6,12 @@
   <a href="https://github.com/Fausto-404/EFF-Assistant/releases">
     <img src="https://img.shields.io/github/v/release/Fausto-404/EFF-Assistant?style=flat-square&label=release&color=blue&cacheSeconds=3600" alt="Release">
   </a>
-
   <a href="https://github.com/Fausto-404/EFF-Assistant/stargazers">
     <img src="https://img.shields.io/github/stars/Fausto-404/EFF-Assistant?style=flat-square&label=stars&color=brightgreen&cacheSeconds=3600" alt="GitHub Stars">
   </a>
-
   <a href="https://github.com/Fausto-404/EFF-Assistant/network/members">
     <img src="https://img.shields.io/github/forks/Fausto-404/EFF-Assistant?style=flat-square&label=forks&color=orange&cacheSeconds=3600" alt="GitHub Forks">
   </a>
-
   <a href="https://github.com/Fausto-404/EFF-Assistant/releases">
     <img src="https://img.shields.io/github/downloads/Fausto-404/EFF-Assistant/total?style=flat-square&label=downloads&color=success&cacheSeconds=3600" alt="Downloads">
   </a>
@@ -22,11 +19,15 @@
 
 </div>
 
-EFF Assistant 是一款面向安全运营人员的 Chrome / Edge 浏览器扩展。它可以直接读取安全设备 Web 控制台中的告警上下文，在尽量不改造现有安全设备的情况下完成 **告警字段识别、资产属性关联与 AI 快速研判** ，并可连接EFF-Monitoring完成工单协作和平台级智能研判。
+EFF Assistant 是一款面向安全运营人员的 Chrome / Edge 浏览器扩展。
+
+它直接工作在现有 WAF、NDR、IDS/IPS、SOC、SIEM、EDR 等安全设备 Web 控制台之上，无需改造原有平台，即可提供 **快速研判、关联分析、操作历史、生成工单、智能研判** 五项能力。
+
+插件既可以完全独立使用，也可以连接 [EFF-Monitoring](https://github.com/Fausto-404/EFF-Monitoring)，进一步完成资产关联、工单协作和平台级智能研判。
+
+> **核心目标：让现有 WAF、NDR、SOC 等安全设备快速具备告警解析、AI 研判、资产关联与工单联动能力。**
 
 ---
-
-**EFF-Monitoring安全运营协作平台请查看：** [EFF-Monitoring](https://github.com/Fausto-404/EFF-Monitoring)
 
 ## 🎬 功能演示
 
@@ -34,9 +35,23 @@ https://github.com/user-attachments/assets/1049f43b-fdc2-42bd-ae5b-b983fb4f45dd
 
 ---
 
+## ✨ 两种使用模式 · 四项核心能力
+
+EFF Assistant 提供两种使用模式。
+
+无需部署额外平台，仅配置 Quick AI，即可独立使用 **快速研判、关联分析**；连接 [EFF-Monitoring](https://github.com/Fausto-404/EFF-Monitoring) 后，可进一步使用 **生成工单、智能研判**。
+
+| 使用模式 | 核心能力 | 说明 |
+| --- | --- | --- |
+| **独立使用** | ⚡ 快速研判 | 读取当前告警页面上下文，调用用户配置的 AI 快速完成单条告警研判 |
+| **独立使用** | 🔗 关联分析 | 将多条告警加入同一分析上下文，联合分析攻击行为、时间关系及关联证据 |
+| **进阶使用** | ▣ 生成工单 | 连接 EFF-Monitoring，自动解析告警字段、关联资产信息并生成安全工单 |
+| **进阶使用** | ◎ 智能研判 | 调用平台 Threat Analysis Agent，结合资产、情报、历史告警等上下文进行深度调查 |
+
+---
 ## 🖥️ 支持场景
 
-只要告警内容能够在浏览器页面中正常展示，EFF Assistant 即可采集页面上下文，并参与字段解析、资产关联、AI 研判与协作流转。
+只要安全告警能够在浏览器页面中正常展示，EFF Assistant 即可参与页面上下文采集与 AI 研判。
 
 典型场景包括：
 
@@ -44,17 +59,16 @@ https://github.com/user-attachments/assets/1049f43b-fdc2-42bd-ae5b-b983fb4f45dd
 
 ---
 
-## ✨ 核心能力
 
-| 能力 | 说明 |
-| --- | --- |
-| ⚡ **快速研判** | 直接读取当前页面告警上下文，调用用户自行配置的 AI，输出结构化研判结论与关键证据 |
-| ▣ **生成工单** | 自动识别设备并解析源 IP、目的 IP、事件等字段，同时关联源/目的 IP 的资产与名单属性，生成 EFF-Monitoring 工单 |
-| ◎ **智能研判** | 连接 EFF-Monitoring 后调用 Threat Analysis Agent，结合资产、威胁情报、历史告警、相似事件与 STE 经验进行证据增强研判 |
+# 01｜独立使用
 
-### 快速研判
+只需要配置 Quick AI，无需部署 EFF-Monitoring，即可使用 EFF Assistant 的核心 AI 研判能力。
 
-插件读取当前页面可见告警文本，并调用用户自行配置的 AI 服务完成快速研判。
+## ⚡ 快速研判
+
+快速研判面向当前页面中的单条安全告警。
+
+EFF Assistant 自动读取当前页面可见内容，识别告警场景、提取关键证据，并调用用户自行配置的 AI Provider 输出结构化研判结果。
 
 ```text
 当前安全设备页面
@@ -69,14 +83,76 @@ Quick AI
         ↓
 结构化安全研判
 ```
-<img width="2998" height="1526" alt="image" src="https://github.com/user-attachments/assets/e6041b85-59f2-490f-8220-2d587b02a6f1" />
+
+适用于：
+
+- WAF 攻击告警
+- NDR / IDS / IPS 网络攻击告警
+- SOC / SIEM 聚合告警
+- EDR Web 控制台事件
+- WebShell / 恶意请求 / 漏洞利用告警
+- 自研安全运营平台事件
+<img width="2904" height="1502" alt="image" src="https://github.com/user-attachments/assets/0ae4e80c-dd1d-4207-8e64-82a8a399df73" />
 
 
-### 智能研判
+---
 
-连接 EFF-Monitoring 后，可直接调用平台侧 Threat Analysis Agent。
+## 🔗 关联分析
 
-相比浏览器侧快速研判，平台智能研判可以进一步结合：
+真实安全事件通常不会只产生一条告警。
+
+单条告警可能只能看到某一个攻击动作，而多个告警组合后，才能进一步识别完整攻击行为。
+
+EFF Assistant 支持将 **多条告警加入同一个分析任务**，由 AI 统一分析这些事件之间的关联关系。
+
+典型场景包括：
+
+- 同一源 IP 产生多条攻击告警
+- 同一资产连续出现不同类型事件
+- 多阶段漏洞利用行为
+- 同一攻击者访问多个 URL
+- 单条告警证据不足
+- 多条相似告警需要联合判断
+<img width="2942" height="1526" alt="image" src="https://github.com/user-attachments/assets/013c1315-31d5-432f-b8bb-2416dd042d68" />
+
+---
+
+# 02｜进阶使用
+
+连接 [EFF-Monitoring](https://github.com/Fausto-404/EFF-Monitoring) 后，EFF Assistant 可以进一步获得资产、告警、威胁情报及运营流程上下文。
+
+## ▣ 生成工单
+
+EFF Assistant 根据当前页面 URL 自动识别安全设备，并调用 EFF-Monitoring 中维护的解析规则，对原始告警进行结构化。
+
+自动提取：
+
+- 安全设备
+- 源 IP
+- 目的 IP
+- 事件类型
+- 告警关键字段
+
+随后进一步关联：
+
+- 内部资产
+- 资产标签
+- IP 黑白名单
+- 已知对象属性
+
+最终直接生成 EFF-Monitoring 安全工单。
+
+<img width="2980" height="1532" alt="生成工单" src="https://github.com/user-attachments/assets/4adfdc0b-c88c-4a4c-bb3d-e4c3809d18ad" />
+
+---
+
+## ◎ 智能研判
+
+连接 EFF-Monitoring 后，可以调用平台侧 Threat Analysis Agent 对安全事件进行进一步调查。
+
+Quick AI 主要分析浏览器当前能够看到的告警内容。
+
+智能研判则可以进一步利用平台内部已经积累的安全上下文：
 
 - 告警结构化字段
 - 资产信息
@@ -88,93 +164,93 @@ Quick AI
 - Evidence Pack
 - 平台分析工具
 
-完成更完整的安全事件调查与证据化研判。
-<img width="2998" height="1526" alt="image" src="https://github.com/user-attachments/assets/5b2ece46-c178-43f4-a90a-9b6fe3935bd4" />
+形成证据增强的安全事件调查。
+
+
+<img width="2998" height="1526" alt="智能研判" src="https://github.com/user-attachments/assets/5b2ece46-c178-43f4-a90a-9b6fe3935bd4" />
 
 ---
 
-### 一键生成工单
-
-EFF Assistant 可以根据当前页面 URL 自动识别对应安全设备，并调用 EFF-Monitoring 中维护的解析规则提取 **设备、源 IP、目的 IP、事件** 等关键字段。
-
-解析完成后，平台可进一步关联源/目的 IP 的资产属性和名单属性，帮助运营人员快速判断 IP 是否属于内部资产、已知资产或黑白名单对象，再生成工单进入后续协作流转。
-
-```text
-安全设备告警页面
-        ↓
-URL 自动识别设备
-        ↓
-EFF Parser 解析告警
-        ↓
-设备 / 源IP / 目的IP / 事件
-        ↓
-资产属性 / 资产标签 / 黑白名单
-        ↓
-生成工单 → 协作流转
-```
-
-<img width="2980" height="1532" alt="image" src="https://github.com/user-attachments/assets/4adfdc0b-c88c-4a4c-bb3d-e4c3809d18ad" />
-
----
 
 ## 🤖 Quick AI
 
-快速研判支持用户自行配置 AI Provider，不绑定固定服务商。
+独立使用模式下，EFF Assistant 不绑定固定 AI 服务商。
+
+当前支持通过兼容接口配置 AI Provider：
 
 | 协议 | Base URL 示例 |
 | --- | --- |
 | Anthropic 兼容 | `https://xxx.xxx/anthropic` |
 | OpenAI 兼容 | `https://xxx.xxx/v1` |
 
-> 快速研判可能读取当前页面中的告警日志、IP、资产信息、HTTP 请求/响应及攻击 Payload，并发送至用户自行配置的 AI Provider。请根据所在组织的数据安全与合规要求决定是否启用。
+> **数据安全提示**
+>
+> 快速研判和关联分析可能读取当前页面中的告警日志、IP、资产信息、HTTP 请求/响应以及攻击 Payload，并发送至用户自行配置的 AI Provider。请根据所在组织的数据安全、保密和合规要求决定是否启用，并优先使用符合组织要求的模型服务。
 
 ---
 
 ## 🚀 安装
 
-当前推荐通过开发者模式安装。
+当前推荐通过浏览器开发者模式安装。
 
-### Chrome / Edge
+### Chrome
 
 1. 下载并解压 EFF Assistant。
-2. 打开 `chrome://extensions/` 或 `edge://extensions/`。
+2. 打开 `chrome://extensions/`。
 3. 开启 **开发者模式**。
 4. 点击 **加载已解压的扩展程序**。
-5. 选择 EFF Assistant 目录。
+5. 选择包含 `manifest.json` 的 `EFF-Assistant` 目录。
 
-> 安装完成后，可通过插件设置页配置 EFF-Monitoring 或 Quick AI。
+### Edge
+
+1. 下载并解压 EFF Assistant。
+2. 打开 `edge://extensions/`。
+3. 开启 **开发人员模式**。
+4. 点击 **加载解压缩的扩展**。
+5. 选择包含 `manifest.json` 的 `EFF-Assistant` 目录。
+
+安装完成后，通过插件设置页配置 Quick AI；如需使用进阶能力，再配置 EFF-Monitoring。
 
 ---
 
 ## 🧪 Demo 演示环境
 
-项目提供了一套可直接用于体验 EFF Assistant 的演示环境和设备规则包，位于：
+项目提供了一套用于体验 EFF Assistant 的演示环境和设备识别规则，位于：
 
 [Demo](https://github.com/Fausto-404/EFF-Assistant/tree/main/Demo)
 
-其中包含：
+其中包括：
 
-- `index.html`：模拟安全设备告警详情页面，可用于测试页面识别、字段解析和 AI 快速研判。
-- `安全威胁监测分析平台_设备识别包.json`：EFF-Monitoring 设备规则/模板导入包，包含设备信息及告警字段解析规则。
+- `index.html`：模拟安全设备告警详情页面。
+- `安全威胁监测分析平台_设备识别包.json`：EFF-Monitoring 设备规则 / 模板导入包。
 
-### 使用方式
-如果只是测试快速研判功能，直接配置apikey使用即可，如果需要用生成工单、智能研判功能可以按照如下步骤配置
-1. 在 [EFF-Monitoring](https://github.com/Fausto-404/EFF-Monitoring) 中进入系统配置 → 设备 新增演示设备：
-<img width="2966" height="1520" alt="image" src="https://github.com/user-attachments/assets/4947050d-36c8-4a0d-b704-0c8ee882346a" />
+### 仅体验独立能力
+
+如果只需要测试：
+
+- 快速研判
+- 关联分析
+
+直接打开 Demo 页面并配置 Quick AI 即可，无需部署 EFF-Monitoring。
+
+### 体验进阶能力
+
+如果需要测试：
+
+- 生成工单
+- 智能研判
+
+则需要先部署 [EFF-Monitoring](https://github.com/Fausto-404/EFF-Monitoring)。
+
+1. 在 EFF-Monitoring 中进入 **系统配置 → 设备**，新增演示设备。
+
+<img width="2966" height="1520" alt="新增演示设备" src="https://github.com/user-attachments/assets/4947050d-36c8-4a0d-b704-0c8ee882346a" />
 
 2. 导入 Demo 目录中的设备识别包。
-<img width="2382" height="1092" alt="image" src="https://github.com/user-attachments/assets/484b0801-cc38-425d-8977-253ee8027677" />
 
-3. 配置对应的设备 URL 后，即可使用 EFF Assistant 测试：
+<img width="2382" height="1092" alt="导入设备识别包" src="https://github.com/user-attachments/assets/484b0801-cc38-425d-8977-253ee8027677" />
 
-   - 自动识别告警字段
-   - 一键生成工单
-   - 平台智能研判
-   - Quick AI 快速研判
-
-## 📄 License
-
-本项目基于 [Apache License 2.0](./LICENSE) 开源。
+3. 配置对应设备 URL 后，即可通过 EFF Assistant 测试完整流程。
 
 ---
 
@@ -184,10 +260,17 @@ EFF Parser 解析告警
 
 - 提交新的安全设备适配规则
 - 反馈实际安全运营场景中的兼容性问题
-- 提出 Quick AI 与 EFF-Monitoring 联动能力的改进建议
+- 提交交互体验改进建议
+- 提出 Quick AI / 关联分析能力优化建议
+- 改进 EFF-Monitoring 联动能力
 
-如果项目对你的工作有帮助，欢迎 Star。
+如果项目对你的安全运营工作有帮助，欢迎 Star。
 
+---
+
+## 📄 License
+
+本项目基于 [Apache License 2.0](./LICENSE) 开源。
 ## 📝 更新记录
 
 ### v1.0.1
@@ -198,4 +281,3 @@ EFF Parser 解析告警
 - 修复设置页面 Service Worker 无响应时页面永久挂起的问题
 - 修复 `setAccessLevel` 调用了不存在的存储 API（`chrome.storage.local` → `chrome.storage.session`），导致存储安全加固静默失效
 - 修复快速研判 AI 推理请求无超时保护，极端情况下可能无限等待
-
