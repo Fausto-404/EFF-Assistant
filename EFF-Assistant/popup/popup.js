@@ -57,8 +57,9 @@ function render() {
   const platform = runtimeState?.platform || {};
   $("connectionText").textContent = platform.connectionStatus === "unauthorized" ? "平台认证已失效，请重新配置密钥"
     : platform.connectionStatus === "unreachable" ? "平台暂不可达，请检查网络"
+    : platform.connectionStatus === "unknown" && platform.configured ? "平台连接待验证"
     : platform.connected ? (platform.ticketCreation === false ? "已连接，但无创建工单权限" : `已连接 ${platform.platformName || "EFF-Monitoring"}`) : "未连接 EFF-Monitoring";
-  $("connectionDot").classList.toggle("ok", !!platform.connected);
+  $("connectionDot").classList.toggle("ok", !!platform.connected && platform.connectionStatus === "connected" && platform.ticketCreation !== false);
   $("platformAI").textContent = "平台AI";
   $("platformAI").title = platform.platformAI ? "平台 AI 可用" : "平台 AI 不可用";
   $("platformAI").className = `ai-pill ${platform.platformAI ? "ok" : "off"}`;

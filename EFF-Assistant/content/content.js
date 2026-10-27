@@ -2912,6 +2912,7 @@
   function petStatusClass() {
     if (isAnyActionBusy() || state.activity === "parsing") return "working";
     if (!state.platform?.connected) return "disconnected";
+    if (state.platform.connectionStatus === "unknown" || state.platform.ticketCreation === false) return "unrecognized";
     if (!state.device) return "unrecognized";
     if (state.parseResult) return "ready";
     return "connected";
@@ -2923,12 +2924,16 @@
     if (state.busy.ticket) return "EFF Assistant：正在生成工单";
     if (state.activity === "parsing") return "EFF Assistant：正在解析当前页面";
     if (!state.platform?.connected) return "EFF Assistant：平台未连接";
+    if (state.platform.connectionStatus === "unknown") return "EFF Assistant：平台连接待验证";
+    if (state.platform.ticketCreation === false) return "EFF Assistant：已连接，但缺少创建工单权限";
     if (!state.device) return "EFF Assistant：当前页面未识别设备";
     return `EFF Assistant：${state.device.name}（悬停显示快捷操作）`;
   }
 
   function statusText() {
     if (!state.platform?.connected) return "平台未连接";
+    if (state.platform.connectionStatus === "unknown") return "平台连接待验证";
+    if (state.platform.ticketCreation === false) return "当前密钥无创建工单权限";
     if (!state.device) return "当前 URL 未匹配已启用浏览器助手的设备";
     if (isAnyActionBusy()) return "处理中…";
     if (!state.parseResult) return "正在读取并解析当前页面";

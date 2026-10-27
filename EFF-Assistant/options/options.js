@@ -104,8 +104,9 @@ function renderState(state) {
 function renderPlatformStatus(p) {
   el("connectionBadge").textContent = p.connectionStatus === "unauthorized" ? "认证失效"
     : p.connectionStatus === "unreachable" ? "暂不可达"
+    : p.connectionStatus === "unknown" && p.configured ? "待验证"
     : p.connected ? (p.ticketCreation === false ? "已连接·无工单权限" : "已连接") : "未连接";
-  el("connectionBadge").classList.toggle("ok", !!p.connected);
+  el("connectionBadge").classList.toggle("ok", !!p.connected && p.connectionStatus === "connected" && p.ticketCreation !== false);
   el("platformInfo").textContent = p.connected
     ? `平台：${p.platformName || "EFF-Monitoring"}${p.version ? ` ${p.version}` : ""} · Workspace：${p.workspace || "-"} · 平台AI：${p.platformAI ? "可用" : "不可用"}`
     : "";
