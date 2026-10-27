@@ -185,18 +185,24 @@ async function handleMessage(message, sender) {
     case "CHECK_PLATFORM": {
       const cfg = await getConfig();
       if (!cfg.platform.connected || !cfg.platform.baseUrl || !cfg.platform.token) return { platform: publicPlatform(cfg.platform) };
-      const previous = cfg.platform.connectionStatus;
-      const previousTicketCreation = cfg.platform.ticketCreation;
+      let status = "connected";
+      let data = null;
       try {
-        const data = await apiFetch(cfg, "/api/plugin/me", { method: "GET", timeoutMs: PLATFORM_TIMEOUTS.me });
-        applyPlatformMeta(cfg.platform, data);
-        cfg.platform.connectionStatus = "connected";
+        data = await apiFetch(cfg, "/api/plugin/me", { method: "GET", timeoutMs: PLATFORM_TIMEOUTS.me });
       } catch (error) {
-        cfg.platform.connectionStatus = error?.status === 401 || error?.status === 403 ? "unauthorized" : "unreachable";
+        status = error?.status === 401 || error?.status === 403 ? "unauthorized" : "unreachable";
       }
-      await saveConfig(cfg);
-      if (previous !== cfg.platform.connectionStatus || previousTicketCreation !== cfg.platform.ticketCreation) await broadcastRuntimeConfig(cfg);
-      return { platform: publicPlatform(cfg.platform) };
+      const latest = await getConfig();
+      if (latest.platform.baseUrl !== cfg.platform.baseUrl || latest.platform.token !== cfg.platform.token || !latest.platform.connected) {
+        return { platform: publicPlatform(latest.platform) };
+      }
+      const previous = latest.platform.connectionStatus;
+      const previousTicketCreation = latest.platform.ticketCreation;
+      if (data) applyPlatformMeta(latest.platform, data);
+      latest.platform.connectionStatus = status;
+      await saveConfig(latest);
+      if (previous !== status || previousTicketCreation !== latest.platform.ticketCreation) await broadcastRuntimeConfig(latest);
+      return { platform: publicPlatform(latest.platform) };
     }
     case "DISCONNECT_PLATFORM": {
       const cfg = await getConfig();

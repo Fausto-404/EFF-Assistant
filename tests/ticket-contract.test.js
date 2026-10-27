@@ -66,6 +66,23 @@ test("ticket authorization failure refreshes the cached connection state", async
   assert.equal(state.platform.ticketCreation, false);
 });
 
+test("an old connection check cannot overwrite a newly saved platform token", async () => {
+  let release;
+  let started;
+  const startedPromise = new Promise((resolve) => { started = resolve; });
+  const gate = new Promise((resolve) => { release = resolve; });
+  const app = setup(async () => { started(); await gate; return { status: 401, body: { detail: "expired" } }; });
+  await app.send({ type: "SAVE_PLATFORM", baseUrl: "http://old.example", token: "old" });
+  const checking = app.send({ type: "CHECK_PLATFORM" });
+  await startedPromise;
+  await app.send({ type: "SAVE_PLATFORM", baseUrl: "http://new.example", token: "new", meta: me });
+  release();
+  await checking;
+  const state = await app.send({ type: "GET_STATE" });
+  assert.equal(state.platform.baseUrl, "http://new.example");
+  assert.equal(state.platform.connectionStatus, "connected");
+});
+
 test("relative workbench URL opens on the configured platform origin", async () => {
   const app = setup(async () => ({ status: 200, body: me }));
   await app.send({ type: "SAVE_PLATFORM", baseUrl: "http://localhost:8000", token: "valid" });
