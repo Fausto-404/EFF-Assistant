@@ -27,6 +27,7 @@ const DEFAULT_CONFIG = {
     baseUrl: "",
     token: "",
     connected: false,
+    connectionStatus: "unknown",
     platformName: "EFF-Monitoring",
     version: "",
     workspace: "",
@@ -164,6 +165,11 @@ async function handleMessage(message, sender) {
     }
     case "TEST_PLATFORM": {
       const data = await apiFetchWith(message.baseUrl, message.token, "/api/plugin/me", { method: "GET", timeoutMs: PLATFORM_TIMEOUTS.me });
+      const required = ["plugin:devices:read", "plugin:parse", "plugin:alert:create"];
+      if (Array.isArray(data?.scopes)) {
+        const missing = required.filter((scope) => !data.scopes.includes(scope));
+        if (missing.length) throw new Error(`插件密钥缺少创建工单所需权限：${missing.join("、")}。请在平台重新生成密钥。`);
+      }
       return { data };
     }
     case "SAVE_PLATFORM": {
@@ -171,8 +177,25 @@ async function handleMessage(message, sender) {
       cfg.platform.baseUrl = normalizeBaseUrl(message.baseUrl);
       cfg.platform.token = String(message.token || "").trim();
       cfg.platform.connected = true;
+      cfg.platform.connectionStatus = "connected";
       if (message.meta) applyPlatformMeta(cfg.platform, message.meta);
       await saveConfig(cfg);
+      return { platform: publicPlatform(cfg.platform) };
+    }
+    case "CHECK_PLATFORM": {
+      const cfg = await getConfig();
+      if (!cfg.platform.connected || !cfg.platform.baseUrl || !cfg.platform.token) return { platform: publicPlatform(cfg.platform) };
+      const previous = cfg.platform.connectionStatus;
+      const previousTicketCreation = cfg.platform.ticketCreation;
+      try {
+        const data = await apiFetch(cfg, "/api/plugin/me", { method: "GET", timeoutMs: PLATFORM_TIMEOUTS.me });
+        applyPlatformMeta(cfg.platform, data);
+        cfg.platform.connectionStatus = "connected";
+      } catch (error) {
+        cfg.platform.connectionStatus = error?.status === 401 || error?.status === 403 ? "unauthorized" : "unreachable";
+      }
+      await saveConfig(cfg);
+      if (previous !== cfg.platform.connectionStatus || previousTicketCreation !== cfg.platform.ticketCreation) await broadcastRuntimeConfig(cfg);
       return { platform: publicPlatform(cfg.platform) };
     }
     case "DISCONNECT_PLATFORM": {
@@ -268,21 +291,30 @@ async function handleMessage(message, sender) {
     case "CREATE_TICKET": {
       const cfg = await requirePlatformConfig();
       const payload = {
+        request_id: message.requestId || undefined,
         parse_token: message.parseToken || null,
         device_id: message.deviceId,
         message_template_id: message.messageTemplateId || null,
         page: message.page || {},
-        text: message.parseToken ? undefined : (message.text || ""),
+        text: message.text || "",
         source: {
           type: "browser_assistant",
           url: message.page?.url || sender?.tab?.url || "",
           title: message.page?.title || sender?.tab?.title || ""
         }
       };
-      const data = await apiFetch(cfg, "/api/plugin/alerts", {
-        method: "POST",
-        body: JSON.stringify(removeUndefined(payload))
-      });
+      let data;
+      try {
+        data = await apiFetch(cfg, "/api/plugin/alerts", {
+          method: "POST",
+          body: JSON.stringify(removeUndefined(payload))
+        });
+      } catch (error) {
+        if (error?.status === 401 || error?.status === 403) {
+          await handleMessage({ type: "CHECK_PLATFORM" }, sender).catch(() => {});
+        }
+        throw error;
+      }
       return { data };
     }
     case "GET_MESSAGE_TEMPLATES": {
@@ -471,9 +503,13 @@ async function handleMessage(message, sender) {
       return {};
     }
     case "OPEN_URL": {
-      if (message.url && /^https?:\/\//i.test(message.url)) {
-        await chrome.tabs.create({ url: message.url });
-      }
+      const cfg = await getConfig();
+      const raw = String(message.url || "");
+      const isRelative = raw.startsWith("/") && !raw.startsWith("//");
+      const platformOrigin = cfg.platform.baseUrl ? new URL(cfg.platform.baseUrl).origin : "";
+      const target = new URL(raw, platformOrigin || undefined);
+      if (!/^https?:$/.test(target.protocol) || (isRelative && target.origin !== platformOrigin)) throw new Error("无效的页面地址");
+      await chrome.tabs.create({ url: target.href });
       return {};
     }
     default:
@@ -851,11 +887,14 @@ function normalizeBaseUrl(value) {
 function publicPlatform(platform) {
   return {
     baseUrl: platform.baseUrl || "",
-    connected: !!platform.connected,
+    configured: !!(platform.connected && platform.baseUrl && platform.token),
+    connected: !!platform.connected && platform.connectionStatus !== "unauthorized" && platform.connectionStatus !== "unreachable",
+    connectionStatus: platform.connectionStatus || "unknown",
     platformName: platform.platformName || "EFF-Monitoring",
     version: platform.version || "",
     workspace: (platform.workspace && typeof platform.workspace === "object" ? platform.workspace.name : platform.workspace) || "",
     platformAI: !!platform.platformAI,
+    ticketCreation: platform.ticketCreation !== false,
     username: platform.username || "",
     tokenMasked: platform.token ? `${platform.token.slice(0, 8)}********` : ""
   };
@@ -867,6 +906,7 @@ function applyPlatformMeta(target, data) {
   const ws = data.workspace; target.workspace = (ws && typeof ws === "object" ? ws.name : ws) || data.workspace_name || "";
   target.username = data.user?.username || data.username || "";
   target.platformAI = !!(data.capabilities?.platform_ai ?? data.platform_ai_enabled ?? data.platform_ai);
+  target.ticketCreation = data.capabilities?.ticket_creation !== false;
 }
 
 async function getConfig() {

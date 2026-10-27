@@ -43,12 +43,21 @@ async function refreshAll() {
   context = ctx.ok ? ctx : null;
   historyItems = Array.isArray(history) ? history : [];
   render();
+  if (runtimeState?.platform?.configured) {
+    const checked = await send({ type: "CHECK_PLATFORM" }, 25000);
+    if (checked.ok && checked.platform) {
+      runtimeState.platform = checked.platform;
+      render();
+    }
+  }
 }
 
 function render() {
   applyTheme(runtimeState?.ui?.theme || "dark");
   const platform = runtimeState?.platform || {};
-  $("connectionText").textContent = platform.connected ? `已连接 ${platform.platformName || "EFF-Monitoring"}` : "未连接 EFF-Monitoring";
+  $("connectionText").textContent = platform.connectionStatus === "unauthorized" ? "平台认证已失效，请重新配置密钥"
+    : platform.connectionStatus === "unreachable" ? "平台暂不可达，请检查网络"
+    : platform.connected ? (platform.ticketCreation === false ? "已连接，但无创建工单权限" : `已连接 ${platform.platformName || "EFF-Monitoring"}`) : "未连接 EFF-Monitoring";
   $("connectionDot").classList.toggle("ok", !!platform.connected);
   $("platformAI").textContent = "平台AI";
   $("platformAI").title = platform.platformAI ? "平台 AI 可用" : "平台 AI 不可用";

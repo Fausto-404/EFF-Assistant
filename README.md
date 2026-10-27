@@ -136,6 +136,10 @@ EFF Assistant 根据当前页面 URL 自动识别安全设备，并调用 EFF-Mo
 - 已知对象属性
 
 最终直接生成 EFF-Monitoring 安全工单。
+
+> 工单稳定性说明（v1.1.1）：“已连接”只表示身份接口可用，不代表密钥一定有建单权限。插件会检查 `plugin:devices:read`、`plugin:parse`、`plugin:alert:create` 三项权限；创建失败后的重试会沿用同一个请求标识，配合新版 EFF-Monitoring 避免重复工单。请将平台地址填写为**前端访问地址**（例如 `http://localhost:8080`），不要只填写 API 地址 `http://localhost:8000`，否则工单链接无法打开工作台。
+
+遇到“已连接但无法创建工单”时，请依次检查：密钥是否过期/被吊销、创建密钥的账号是否仍启用并具有写入角色、设备是否开启浏览器助手且 URL 匹配、当前页面是否有单条告警文本（上限 512 KiB）。HTTP 页面也可生成重试标识。升级插件后在 `chrome://extensions/` 重新加载扩展，并刷新设备告警页面。
 <img width="2932" height="1518" alt="image" src="https://github.com/user-attachments/assets/6ecb5c8a-1b9a-4495-b5b8-f8dfcb10ad09" />
 
 ---

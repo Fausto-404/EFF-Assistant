@@ -10,6 +10,11 @@ init();
 async function init() {
   const state = await send({ type: "GET_STATE" });
   if (state.ok) renderState(state);
+  if (state.ok && state.platform?.configured) {
+    send({ type: "CHECK_PLATFORM" }, 25000).then((checked) => {
+      if (checked.ok && checked.platform) renderPlatformStatus(checked.platform);
+    });
+  }
 
   document.querySelectorAll(".nav-item").forEach((btn) => {
     btn.addEventListener("click", () => openSection(btn.dataset.section || "ai", true));
@@ -79,11 +84,7 @@ function renderState(state) {
   const p = state.platform || {};
   el("platformUrl").value = p.baseUrl || "";
   el("platformToken").placeholder = p.tokenMasked || "eff_pat_****************";
-  el("connectionBadge").textContent = p.connected ? "已连接" : "未连接";
-  el("connectionBadge").classList.toggle("ok", !!p.connected);
-  el("platformInfo").textContent = p.connected
-    ? `平台：${p.platformName || "EFF-Monitoring"}${p.version ? ` ${p.version}` : ""} · Workspace：${p.workspace || "-"} · 平台AI：${p.platformAI ? "可用" : "不可用"}`
-    : "";
+  renderPlatformStatus(p);
   renderDevices(state.devices || [], state.devicesSyncedAt);
   if (state.quickAI) {
     el("quickEnabled").checked = !!state.quickAI.enabled;
@@ -98,6 +99,16 @@ function renderState(state) {
     el("quickCustomHeaders").value = state.quickAI.customHeaders || "";
     updateProtocolUI();
   }
+}
+
+function renderPlatformStatus(p) {
+  el("connectionBadge").textContent = p.connectionStatus === "unauthorized" ? "认证失效"
+    : p.connectionStatus === "unreachable" ? "暂不可达"
+    : p.connected ? (p.ticketCreation === false ? "已连接·无工单权限" : "已连接") : "未连接";
+  el("connectionBadge").classList.toggle("ok", !!p.connected);
+  el("platformInfo").textContent = p.connected
+    ? `平台：${p.platformName || "EFF-Monitoring"}${p.version ? ` ${p.version}` : ""} · Workspace：${p.workspace || "-"} · 平台AI：${p.platformAI ? "可用" : "不可用"}`
+    : "";
 }
 
 async function toggleTheme() {

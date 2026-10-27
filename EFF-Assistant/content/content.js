@@ -15,7 +15,7 @@
     QUICK_ANALYZE: 620000,
     PLATFORM_ANALYZE: 620000,
     CORRELATE_ANALYZE: 620000,
-    CREATE_TICKET: 120000,
+    CREATE_TICKET: 135000,
     PARSE_PAGE: 100000,
     SEND_TICKET_WEBHOOK: 30000,
     SAVE_UI_STATE: 6000,
@@ -44,6 +44,8 @@
     messageTemplatesLoadedFor: null,
     selectedMessageTemplateId: null,
     ticketResult: null,
+    ticketRequestId: null,
+    ticketRequestFingerprint: "",
     busy: { ticket: false, smart: false, quick: false },
     activity: "idle",
     currentUrl: location.href,
@@ -127,6 +129,10 @@
         state.messageTemplatesLoadedFor = null;
         state.selectedMessageTemplateId = null;
         state.ticketResult = null;
+        if (deviceChanged) {
+          state.ticketRequestId = null;
+          state.ticketRequestFingerprint = "";
+        }
         state.activity = "idle";
       }
 
@@ -2408,22 +2414,42 @@
       showToast("当前页面未识别设备，请先在平台设备配置中启用浏览器助手并配置设备 URL", true);
       return;
     }
+    if (state.platform.ticketCreation === false) {
+      showToast("当前插件密钥缺少创建工单权限，请在平台重新生成包含 plugin:alert:create 的密钥", true);
+      return;
+    }
     state.busy.ticket = true;
     state.activeAction = "ticket";
     render();
 
     try {
-      if (!state.parseResult) await parseCurrentPage(true);
+      const text = collectPageText();
+      if (!text) throw new Error("当前页面没有可用的告警文本");
+      if (new TextEncoder().encode(text).length > 512 * 1024) {
+        throw new Error("页面文本超过 512 KiB，请先打开单条告警详情再创建工单");
+      }
+      const fingerprint = `${state.device.id}|${state.selectedMessageTemplateId || "default"}|${location.href}|${text.length}|${simpleHash(text)}`;
+      if (state.ticketRequestFingerprint !== fingerprint || !state.ticketRequestId) {
+        state.ticketRequestFingerprint = fingerprint;
+        // randomUUID is unavailable in some HTTP page contexts; getRandomValues works there.
+        const bytes = crypto.getRandomValues(new Uint8Array(16));
+        bytes[6] = (bytes[6] & 0x0f) | 0x40;
+        bytes[8] = (bytes[8] & 0x3f) | 0x80;
+        const hex = Array.from(bytes, (byte) => byte.toString(16).padStart(2, "0")).join("");
+        state.ticketRequestId = `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
+      }
       const resp = await send({
         type: "CREATE_TICKET",
+        requestId: state.ticketRequestId,
         parseToken: state.parseToken,
         deviceId: state.device.id,
         messageTemplateId: state.selectedMessageTemplateId,
-        text: state.pageText || collectPageText(),
+        text,
         page: { url: location.href, title: document.title }
       });
       if (!resp.ok) throw new Error(resp.error?.message || "生成工单失败");
       state.ticketResult = resp.data || null;
+      state.parseResult = resp.data || state.parseResult;
       state.busy.ticket = false;
       state.menuOpen = true;
       state.activeAction = "ticket";
@@ -2750,6 +2776,8 @@
         state.parseToken = null;
         state.pageText = "";
         state.lastPageKey = "";
+        state.ticketRequestId = null;
+        state.ticketRequestFingerprint = "";
         state.menuOpen = false;
         state.activeAction = null;
         state.analysisOpen = false;
